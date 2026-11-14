@@ -55,9 +55,19 @@ class TicketPolicyTest extends TestCase
         $this->assertFalse((new TicketPolicy())->view($this->user(5, UserRole::Agent), $this->ticket(1, null)));
     }
 
-    public function test_an_agent_cannot_view_a_ticket_just_because_they_reported_one_as_staff(): void
+    public function test_whoever_reported_a_ticket_may_view_it_whatever_their_role(): void
     {
-        $this->assertFalse((new TicketPolicy())->view($this->user(1, UserRole::Agent), $this->ticket(requesterId: 1, agentId: 5)));
+        $policy = new TicketPolicy();
+
+        $this->assertTrue($policy->view($this->user(1, UserRole::Agent), $this->ticket(requesterId: 1, agentId: 5)));
+        $this->assertTrue($policy->view($this->user(1, UserRole::Agent), $this->ticket(requesterId: 1)));
+        $this->assertTrue($policy->view($this->user(9, UserRole::Admin), $this->ticket(requesterId: 9)));
+    }
+
+    public function test_being_an_agent_gives_no_view_of_other_peoples_unassigned_tickets(): void
+    {
+        $this->assertFalse((new TicketPolicy())->view($this->user(1, UserRole::Agent), $this->ticket(requesterId: 2, agentId: null)));
+        $this->assertFalse((new TicketPolicy())->view($this->user(1, UserRole::Agent), $this->ticket(requesterId: 2, agentId: 5)));
     }
 
     public function test_administrators_may_view_every_ticket(): void
@@ -77,24 +87,24 @@ class TicketPolicyTest extends TestCase
         $this->assertFalse($policy->view($this->user(9, UserRole::Admin, false), $this->ticket(1)));
     }
 
-    public function test_only_active_staff_users_may_submit_tickets(): void
+    public function test_every_active_user_may_report_a_problem_of_their_own(): void
     {
         $policy = new TicketPolicy();
 
-        $this->assertTrue($policy->create($this->user(1, UserRole::User)));
-        $this->assertFalse($policy->create($this->user(1, UserRole::User, false)));
-        $this->assertFalse($policy->create($this->user(5, UserRole::Agent)));
-        $this->assertFalse($policy->create($this->user(9, UserRole::Admin)));
+        foreach ([UserRole::User, UserRole::Agent, UserRole::Admin] as $role) {
+            $this->assertTrue($policy->create($this->user(1, $role)), $role->value);
+            $this->assertFalse($policy->create($this->user(1, $role, false)), "{$role->value} deactivated");
+        }
     }
 
-    public function test_only_active_staff_users_have_a_my_tickets_list(): void
+    public function test_every_active_user_has_a_my_tickets_list_and_deactivated_users_do_not(): void
     {
         $policy = new TicketPolicy();
 
-        $this->assertTrue($policy->viewAny($this->user(1, UserRole::User)));
-        $this->assertFalse($policy->viewAny($this->user(1, UserRole::User, false)));
-        $this->assertFalse($policy->viewAny($this->user(5, UserRole::Agent)));
-        $this->assertFalse($policy->viewAny($this->user(9, UserRole::Admin)));
+        foreach ([UserRole::User, UserRole::Agent, UserRole::Admin] as $role) {
+            $this->assertTrue($policy->viewAny($this->user(1, $role)), $role->value);
+            $this->assertFalse($policy->viewAny($this->user(1, $role, false)), "{$role->value} deactivated");
+        }
     }
 
     public function test_tickets_are_addressed_by_their_number(): void

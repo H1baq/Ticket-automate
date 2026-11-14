@@ -20,7 +20,6 @@
                     <x-form.radios
                         name="priority"
                         label="How urgent is it?"
-                        value="medium"
                         :required="true"
                         :options="collect($priorities)->mapWithKeys(fn ($priority) => [
                             $priority->value => [

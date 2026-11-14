@@ -10,24 +10,26 @@ use App\Models\User;
 
 /**
  * Who may see a ticket: the person who reported it, the agent it is assigned to, and administrators.
- * Everyone else, and anyone whose account is deactivated, is refused. Staff see only their own tickets.
+ * Everyone else, and anyone whose account is deactivated, is refused. Every active user may report
+ * problems of their own, so every role has a "My tickets" list of what they reported themselves.
  */
 class TicketPolicy
 {
     /**
-     * Staff users have a list of the tickets they reported.
+     * The list of tickets a person reported themselves.
      */
     public function viewAny(User $user): bool
     {
-        return $user->is_active && $user->role === UserRole::User;
+        return $user->is_active;
     }
 
     /**
-     * Only staff users report problems. Agents and administrators work on tickets, they do not submit them.
+     * Anyone with an active account may report a problem of their own. Raising a ticket on behalf of
+     * somebody else is not part of this release.
      */
     public function create(User $user): bool
     {
-        return $user->is_active && $user->role === UserRole::User;
+        return $user->is_active;
     }
 
     /**
@@ -39,10 +41,15 @@ class TicketPolicy
             return false;
         }
 
+
+        if ($ticket->requester_id === $user->id) {
+            return true;
+        }
+
         return match ($user->role) {
             UserRole::Admin => true,
             UserRole::Agent => $ticket->agent_id === $user->id,
-            UserRole::User => $ticket->requester_id === $user->id,
+            UserRole::User => false,
         };
     }
 }

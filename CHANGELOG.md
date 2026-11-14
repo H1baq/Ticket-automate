@@ -62,8 +62,18 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - `TicketPolicy`: the requester, the assigned agent and administrators may view a ticket.
 - `composer serve`, which raises PHP's 2 MB upload limit for local development.
 
+- Agents and administrators can report problems of their own, with the same "My tickets" list and
+  "New ticket" form as staff. Whoever reported a ticket never sees its internal notes, whatever their role.
+
+### Future work
+
+- Raising a ticket on behalf of another user. Every ticket is currently reported by the person who is
+  signed in, and the form cannot set a different requester.
+
 ### Changed
 
+- Priority is no longer preselected on the new ticket form; the person must choose it.
+- Dependencies are resolved for PHP 8.2, so installs work on PHP 8.2 and 8.3 (Symfony 7.4, not 8).
 - Dates are immutable application-wide.
 - The private disk is no longer served by address.
 - The home address now leads to the dashboard, or to sign-in for visitors.

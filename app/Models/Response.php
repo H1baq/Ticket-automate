@@ -45,14 +45,15 @@ class Response extends Model
     }
 
     /**
-     * Internal notes are for the support team. Staff who reported the ticket never see them.
+     * Internal notes are for the support team. Whoever reported the ticket never sees them, even when
+     * they are an agent or an administrator themselves.
      *
      * @param  Builder<Response>  $query
      */
     #[Scope]
-    protected function visibleTo(Builder $query, User $viewer): void
+    protected function visibleTo(Builder $query, User $viewer, int $requesterId): void
     {
-        if ($viewer->role === UserRole::User) {
+        if ($viewer->role === UserRole::User || $viewer->id === $requesterId) {
             $query->where('is_internal', false);
         }
     }

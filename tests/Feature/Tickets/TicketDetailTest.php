@@ -232,13 +232,36 @@ class TicketDetailTest extends TestCase
         $this->actingAs($this->me)->get('/tickets')->assertSee('href="'.route('tickets.show', $this->ticket).'"', false);
     }
 
-    public function test_staff_get_a_way_back_to_their_list_and_agents_do_not(): void
+    public function test_the_person_who_reported_a_ticket_gets_a_way_back_to_their_list_and_the_agent_working_on_it_does_not(): void
     {
-        $this->open()->assertSee('href="'.route('tickets.index').'"', false);
+        $breadcrumb = '<li class="breadcrumb-item"><a href="'.route('tickets.index').'">My tickets</a></li>';
+        $this->open()->assertSee($breadcrumb, false);
 
         $agent = User::factory()->agent()->create();
         $this->ticket->forceFill(['agent_id' => $agent->id])->save();
-        $this->open($agent)->assertDontSee('My tickets');
+        $this->open($agent)->assertDontSee($breadcrumb, false);
+    }
+
+    public function test_an_agent_who_reported_the_ticket_themselves_gets_the_way_back(): void
+    {
+        $agent = User::factory()->agent()->create();
+        $own = Ticket::factory()->for($agent, 'requester')->create(['ticket_no' => 'HD-2026-00200']);
+
+        $this->open($agent, $own)->assertOk()->assertSee('<li class="breadcrumb-item"><a href="'.route('tickets.index').'">My tickets</a></li>', false);
+    }
+
+    public function test_internal_notes_are_hidden_from_the_requester_even_when_the_requester_is_an_agent_or_admin(): void
+    {
+        $worker = User::factory()->agent()->create();
+
+        foreach ([User::factory()->agent()->create(), User::factory()->admin()->create()] as $requester) {
+            $own = Ticket::factory()->for($requester, 'requester')->assigned($worker)->create();
+            Response::factory()->for($own)->for($worker)->create(['message' => "Public reply for {$requester->role->value}"]);
+            Response::factory()->for($own)->for($worker)->internal()->create(['message' => "Secret note for {$requester->role->value}"]);
+
+            $this->open($requester, $own)->assertSee("Public reply for {$requester->role->value}")->assertDontSee("Secret note for {$requester->role->value}");
+            $this->open($worker, $own)->assertSee("Secret note for {$requester->role->value}");
+        }
     }
 
     public function test_the_ticket_number_can_be_copied(): void

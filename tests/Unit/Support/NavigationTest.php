@@ -34,7 +34,8 @@ class NavigationTest extends TestCase
         $routes = $this->routes(UserRole::Agent);
 
         $this->assertContains('agent.queue', $routes);
-        $this->assertNotContains('tickets.create', $routes);
+        $this->assertContains('tickets.index', $routes);
+        $this->assertContains('tickets.create', $routes);
         $this->assertEmpty(array_filter($routes, fn (string $route): bool => str_starts_with($route, 'admin.')));
     }
 
@@ -45,16 +46,27 @@ class NavigationTest extends TestCase
         foreach (['admin.assignments.index', 'admin.tickets.index', 'admin.reports.index', 'admin.users.index', 'admin.categories.index', 'admin.sla.edit', 'admin.settings.index'] as $route) {
             $this->assertContains($route, $routes);
         }
-        $this->assertNotContains('tickets.create', $routes);
+        $this->assertContains('tickets.index', $routes);
+        $this->assertContains('tickets.create', $routes);
+        $this->assertNotContains('agent.queue', $routes);
     }
 
-    public function test_only_staff_have_the_new_ticket_shortcut(): void
+    public function test_every_role_can_report_a_problem_with_the_n_shortcut(): void
     {
         foreach (UserRole::cases() as $role) {
             $shortcuts = array_filter(array_map(fn (NavigationItem $item): ?string => $item->shortcut, Navigation::for($role)));
 
-            $this->assertSame($role === UserRole::User, in_array('new-ticket', $shortcuts, true), $role->value);
+            $this->assertContains('new-ticket', $shortcuts, $role->value);
             $this->assertContains('dashboard', $shortcuts);
         }
+    }
+
+    public function test_the_my_tickets_item_is_only_current_on_the_list_for_agents_and_admins(): void
+    {
+        $patterns = fn (UserRole $role): array => collect(Navigation::for($role))->firstWhere('route', 'tickets.index')->activeOn;
+
+        $this->assertContains('tickets.show', $patterns(UserRole::User));
+        $this->assertNotContains('tickets.show', $patterns(UserRole::Agent), 'An agent opening a ticket assigned to them is not on their own list.');
+        $this->assertNotContains('tickets.show', $patterns(UserRole::Admin));
     }
 }

@@ -44,10 +44,40 @@ class MyTicketsTest extends TestCase
         $this->get('/tickets')->assertRedirect('/login');
     }
 
-    public function test_agents_and_administrators_have_no_my_tickets_page(): void
+    public function test_agents_and_administrators_have_their_own_list_of_what_they_reported(): void
     {
-        $this->actingAs(User::factory()->agent()->create())->get('/tickets')->assertForbidden();
-        $this->actingAs(User::factory()->admin()->create())->get('/tickets')->assertForbidden();
+        foreach ([User::factory()->agent()->create(), User::factory()->admin()->create()] as $user) {
+            Ticket::factory()->for($user, 'requester')->create(['title' => "Reported by {$user->role->value}"]);
+            Ticket::factory()->create(['title' => "Not reported by {$user->role->value}"]);
+
+            $this->actingAs($user)->get('/tickets')
+                ->assertOk()
+                ->assertSee("Reported by {$user->role->value}")
+                ->assertDontSee("Not reported by {$user->role->value}");
+        }
+    }
+
+    public function test_an_agents_list_never_includes_tickets_merely_assigned_to_them(): void
+    {
+        $agent = User::factory()->agent()->create();
+        Ticket::factory()->assigned($agent)->create(['title' => 'Assigned to the agent, reported by someone else']);
+        Ticket::factory()->for($agent, 'requester')->create(['title' => 'Reported by the agent']);
+
+        $this->actingAs($agent)->get('/tickets')->assertSee('Reported by the agent')->assertDontSee('Assigned to the agent, reported by someone else');
+    }
+
+    public function test_the_counts_for_an_agent_cover_only_what_they_reported(): void
+    {
+        $agent = User::factory()->agent()->create();
+        Ticket::factory()->count(2)->for($agent, 'requester')->create();
+        Ticket::factory()->count(5)->assigned($agent)->create();
+
+        $this->assertSame(2, app(TicketService::class)->summaryFor($agent)['unresolved']);
+    }
+
+    public function test_a_deactivated_agent_has_no_list(): void
+    {
+        $this->actingAs(User::factory()->agent()->inactive()->create())->get('/tickets')->assertRedirect('/login');
     }
 
     public function test_staff_see_the_my_tickets_menu_item_and_search_box(): void
@@ -58,8 +88,9 @@ class MyTicketsTest extends TestCase
             ->assertSee('data-shortcut-search', false);
     }
 
-    public function test_agents_and_admins_are_not_offered_a_search_box_that_leads_to_a_403(): void
+    public function test_the_topbar_search_of_an_agent_or_admin_does_not_point_at_the_personal_list(): void
     {
+        // Their search belongs on their work lists (the queue, all tickets), not on the list of what they reported.
         $this->actingAs(User::factory()->agent()->create())->get('/dashboard')->assertOk()->assertDontSee('action="'.route('tickets.index').'"', false);
         $this->actingAs(User::factory()->admin()->create())->get('/dashboard')->assertOk()->assertDontSee('action="'.route('tickets.index').'"', false);
     }

@@ -148,6 +148,16 @@ class TicketValidationTest extends TestCase
         $this->assertRefused($this->submit(['category_id' => $category->id]), 'category_id');
     }
 
+    public function test_leaving_the_priority_unchosen_is_refused_with_a_plain_message_and_no_default_is_applied(): void
+    {
+        $data = $this->input();
+        unset($data['priority']);
+
+        $this->actingAs($this->me)->from('/tickets/create')->post('/tickets', $data)->assertSessionHasErrors(['priority' => 'Choose how urgent this is.']);
+
+        $this->assertDatabaseCount('tickets', 0);
+    }
+
     public function test_the_priority_must_be_one_of_the_three(): void
     {
         $this->assertRefused($this->submit(['priority' => 'urgent']), 'priority');
