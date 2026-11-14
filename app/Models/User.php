@@ -21,6 +21,7 @@ use Illuminate\Foundation\Auth\User as Authenticatable;
  * @property bool $is_active
  * @property int $failed_logins
  * @property CarbonImmutable|null $locked_until
+ * @property CarbonImmutable $created_at
  */
 class User extends Authenticatable
 {

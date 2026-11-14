@@ -1,0 +1,290 @@
+@use '../tokens' as *;
+
+// Application shell: sidebar on the left, topbar and content on the right.
+.app-shell {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    min-height: 100vh;
+
+    @media (width >= 992px) {
+        grid-template-columns: $sidebar-width minmax(0, 1fr);
+    }
+}
+
+.app-main {
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+}
+
+.app-content {
+    flex: 1;
+    width: 100%;
+    max-width: $content-max-width;
+    padding: $space-3 $space-2 $space-4;
+
+    @media (width >= 768px) {
+        padding-inline: $space-3;
+    }
+}
+
+// Sidebar
+.sidebar {
+    display: flex;
+    flex-direction: column;
+    background: $white;
+
+    &.offcanvas-lg {
+        --bs-offcanvas-width: #{$sidebar-width};
+    }
+
+    @media (width >= 992px) {
+        position: sticky;
+        top: 0;
+        height: 100vh;
+        border-right: 1px solid $border;
+    }
+}
+
+.sidebar-brand {
+    display: flex;
+    gap: $space-1;
+    align-items: center;
+    height: $topbar-height;
+    padding-inline: $space-2;
+    color: $ink;
+    border-bottom: 1px solid $border;
+
+    &:hover {
+        color: $ink;
+    }
+}
+
+.brand-mark {
+    display: grid;
+    flex: none;
+    width: 24px;
+    height: 24px;
+    font-size: 0.8125rem;
+    font-weight: 700;
+    color: $white;
+    place-items: center;
+    background: $primary;
+    border-radius: 4px;
+
+    img {
+        width: 100%;
+        height: 100%;
+        object-fit: contain;
+    }
+}
+
+.brand-text {
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+    line-height: 1.2;
+
+    strong {
+        font-size: 0.9375rem;
+    }
+
+    span {
+        overflow: hidden;
+        font-size: 0.75rem;
+        color: $muted;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+    }
+}
+
+.sidebar-nav {
+    flex: 1;
+    padding: $space-1;
+    overflow-y: auto;
+}
+
+.nav-group-label {
+    padding: $space-2 0.5rem 0.25rem;
+    font-size: 0.75rem;
+    font-weight: 600;
+    color: $muted;
+}
+
+.nav-item-link {
+    display: flex;
+    gap: 0.625rem;
+    align-items: center;
+    padding: 0.375rem 0.5rem;
+    margin-bottom: 2px;
+    color: $ink;
+    border-radius: $radius;
+
+    .icon {
+        color: $muted;
+    }
+
+    &:hover {
+        color: $ink;
+        background: $surface;
+    }
+
+    &[aria-current='page'] {
+        font-weight: 600;
+        color: $primary-hover;
+        background: $primary-tint;
+
+        .icon {
+            color: $primary;
+        }
+    }
+}
+
+.sidebar-footer {
+    padding: $space-1 $space-2;
+    font-size: 0.8125rem;
+    color: $muted;
+    border-top: 1px solid $border;
+
+    div + div {
+        margin-top: 0.25rem;
+    }
+}
+
+// Topbar
+.topbar {
+    position: sticky;
+    top: 0;
+    z-index: 1020;
+    display: flex;
+    gap: $space-1;
+    align-items: center;
+    height: $topbar-height;
+    padding-inline: $space-2;
+    background: $white;
+    border-bottom: 1px solid $border;
+
+    @media (width >= 768px) {
+        padding-inline: $space-3;
+    }
+}
+
+.topbar-search {
+    position: relative;
+    flex: 1;
+    max-width: 360px;
+
+    .form-control {
+        padding-right: 2rem;
+        padding-left: 2rem;
+    }
+
+    .icon {
+        position: absolute;
+        top: 50%;
+        left: 0.625rem;
+        color: $muted;
+        pointer-events: none;
+        transform: translateY(-50%);
+    }
+
+    kbd {
+        position: absolute;
+        top: 50%;
+        right: 0.5rem;
+        transform: translateY(-50%);
+    }
+}
+
+.topbar-actions {
+    display: flex;
+    gap: $space-1;
+    align-items: center;
+    margin-left: auto;
+}
+
+.icon-button {
+    position: relative;
+    display: grid;
+    width: 32px;
+    height: 32px;
+    color: $ink;
+    place-items: center;
+    background: transparent;
+    border: 0;
+    border-radius: $radius;
+
+    &:hover {
+        color: $ink;
+        background: $surface;
+    }
+}
+
+.count-badge {
+    position: absolute;
+    top: 0;
+    right: 0;
+    min-width: 16px;
+    padding: 0 4px;
+    font-size: 0.6875rem;
+    font-weight: 700;
+    line-height: 16px;
+    color: $white;
+    text-align: center;
+    background: $overdue;
+    border-radius: 8px;
+}
+
+.user-menu-button {
+    display: flex;
+    gap: $space-1;
+    align-items: center;
+    padding: 0.125rem 0.375rem 0.125rem 0.125rem;
+    color: $ink;
+    background: transparent;
+    border: 0;
+    border-radius: $radius;
+
+    &:hover {
+        background: $surface;
+    }
+}
+
+.avatar {
+    display: grid;
+    width: 28px;
+    height: 28px;
+    font-size: 0.75rem;
+    font-weight: 700;
+    color: $primary-hover;
+    place-items: center;
+    background: $primary-tint;
+    border-radius: 4px;
+}
+
+// Page header
+.page-header {
+    display: flex;
+    flex-wrap: wrap;
+    gap: $space-1 $space-2;
+    align-items: flex-end;
+    justify-content: space-between;
+    margin-bottom: $space-3;
+
+    h1 {
+        margin: 0;
+    }
+
+    .breadcrumb {
+        --bs-breadcrumb-divider: '/';
+
+        margin-bottom: 0.25rem;
+        font-size: 0.8125rem;
+    }
+}
+
+.page-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: $space-1;
+}

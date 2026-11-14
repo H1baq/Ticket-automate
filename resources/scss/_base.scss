@@ -1,0 +1,63 @@
+@use 'tokens' as *;
+
+body {
+    font-variant-numeric: tabular-nums;
+}
+
+// One visible focus style everywhere, never colour alone and never removed.
+:focus-visible {
+    outline: 2px solid $focus;
+    outline-offset: 2px;
+}
+
+.skip-link {
+    position: absolute;
+    top: $space-1;
+    left: $space-1;
+    z-index: 2000;
+    padding: 0.375rem 0.75rem;
+    color: $white;
+    background: $primary;
+    border-radius: $radius;
+    transform: translateY(-200%);
+
+    &:focus {
+        color: $white;
+        transform: none;
+    }
+}
+
+// Links inside running text keep an underline so they never rely on colour alone.
+p a:not(.btn),
+.form-text a {
+    text-decoration: underline;
+}
+
+kbd {
+    padding: 0.0625rem 0.375rem;
+    font-family: $font-mono;
+    font-size: 0.75rem;
+    font-weight: 500;
+    color: $muted;
+    background: $white;
+    border: 1px solid $border;
+    border-bottom-width: 2px;
+    border-radius: 4px;
+}
+
+.text-muted {
+    color: $muted !important;
+}
+
+.text-overdue {
+    color: $overdue !important;
+}
+
+.mono {
+    font-family: $font-mono;
+    font-size: 0.875em;
+}
+
+[hidden] {
+    display: none !important;
+}

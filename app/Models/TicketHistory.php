@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Models;
 
 use App\Enums\TicketStatus;
+use Carbon\CarbonImmutable;
 use Database\Factories\TicketHistoryFactory;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -22,6 +23,7 @@ use LogicException;
  * @property TicketStatus|null $old_status
  * @property TicketStatus|null $new_status
  * @property string|null $details
+ * @property CarbonImmutable $created_at
  */
 class TicketHistory extends Model
 {

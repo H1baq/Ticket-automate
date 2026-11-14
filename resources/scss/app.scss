@@ -1,11 +1,12 @@
-:root {
-    --color-ink: #1b2430;
-    --color-surface: #f6f7f9;
-}
-
-body {
-    margin: 0;
-    color: var(--color-ink);
-    background: var(--color-surface);
-    font-family: system-ui, sans-serif;
-}
+@use 'fonts';
+@use 'theme';
+@use 'base';
+@use 'components/layout';
+@use 'components/badges';
+@use 'components/cards';
+@use 'components/tables';
+@use 'components/forms';
+@use 'components/feedback';
+@use 'components/timeline';
+@use 'components/guest';
+@use 'components/gallery';

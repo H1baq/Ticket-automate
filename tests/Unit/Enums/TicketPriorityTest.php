@@ -21,4 +21,11 @@ class TicketPriorityTest extends TestCase
             $this->assertNotSame('', $priority->description());
         }
     }
+
+    public function test_levels_rise_from_low_to_high(): void
+    {
+        $this->assertSame(1, TicketPriority::Low->level());
+        $this->assertSame(2, TicketPriority::Medium->level());
+        $this->assertSame(3, TicketPriority::High->level());
+    }
 }

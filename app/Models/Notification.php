@@ -20,6 +20,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
  * @property string $message
  * @property NotificationChannel $channel
  * @property CarbonImmutable|null $read_at
+ * @property CarbonImmutable $created_at
  */
 class Notification extends Model
 {
