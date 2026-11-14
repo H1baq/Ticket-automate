@@ -1,5 +1,9 @@
 @use '../tokens' as *;
 
+.table-card .table-responsive {
+    position: relative;
+}
+
 .data-table {
     margin-bottom: 0;
 
@@ -41,7 +45,10 @@
     }
 }
 
+// A positioned container, so visually hidden labels inside a table are clipped with it. Without this
+// they sit at their static position, far to the right of a wide table, and stretch the whole page.
 .table-card {
+    position: relative;
     overflow: hidden;
     background: $white;
     border: 1px solid $border;
