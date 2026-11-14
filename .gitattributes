@@ -1,0 +1,22 @@
+* text=auto eol=lf
+
+*.blade.php diff=html
+*.css diff=css
+*.html diff=html
+*.md diff=markdown
+*.php diff=php
+
+*.png binary
+*.jpg binary
+*.jpeg binary
+*.gif binary
+*.ico binary
+*.woff binary
+*.woff2 binary
+*.pdf binary
+
+/.github export-ignore
+/.githooks export-ignore
+/tests export-ignore
+CHANGELOG.md export-ignore
+CLAUDE.md export-ignore

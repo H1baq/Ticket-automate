@@ -1,0 +1,11 @@
+:root {
+    --color-ink: #1b2430;
+    --color-surface: #f6f7f9;
+}
+
+body {
+    margin: 0;
+    color: var(--color-ink);
+    background: var(--color-surface);
+    font-family: system-ui, sans-serif;
+}
