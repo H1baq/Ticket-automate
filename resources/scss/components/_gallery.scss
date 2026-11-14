@@ -1,0 +1,35 @@
+@use '../tokens' as *;
+
+// Styles for the local-only /dev/ui component gallery.
+.gallery-section {
+    margin-bottom: $space-4;
+
+    > h2 {
+        padding-bottom: $space-1;
+        margin-bottom: $space-2;
+        border-bottom: 1px solid $border;
+    }
+}
+
+.gallery-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: $space-1 $space-2;
+    align-items: center;
+}
+
+.swatch {
+    display: flex;
+    gap: $space-1;
+    align-items: center;
+    font-size: 0.8125rem;
+
+    i {
+        display: block;
+        width: 32px;
+        height: 32px;
+        background: var(--swatch);
+        border: 1px solid $border;
+        border-radius: 4px;
+    }
+}

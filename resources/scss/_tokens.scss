@@ -1,0 +1,61 @@
+// Design tokens. Every colour, size and font in the interface comes from here.
+
+// Palette
+$ink: #1b2430;
+$muted: #5b6675;
+$border: #dde1e6;
+$surface: #f6f7f9;
+$white: #fff;
+$primary: #0f5c4d;
+$primary-hover: #0b4a3e;
+$primary-tint: #e6f0ee;
+$focus: #3b82f6;
+
+// Form controls need 3:1 contrast against white (WCAG 1.4.11); $border is only for decoration.
+$control-border: #7b8696;
+
+// Ticket status colours. Always shown together with the status text.
+$status-open: #2563eb;
+$status-assigned: #7c3aed;
+$status-in-progress: #d97706;
+$status-resolved: #059669;
+$status-closed: #6b7280;
+$overdue: #b91c1c;
+$overdue-tint: #fdf0f0;
+
+// Type
+$font-ui:
+    'Source Sans 3',
+    system-ui,
+    -apple-system,
+    'Segoe UI',
+    sans-serif;
+$font-mono: 'JetBrains Mono', ui-monospace, 'SF Mono', menlo, consolas, monospace;
+$font-size-base: 0.9375rem; // 15px
+
+// Spacing follows an 8px grid.
+$space-1: 0.5rem;
+$space-2: 1rem;
+$space-3: 1.5rem;
+$space-4: 2rem;
+
+// Shape and layout
+$radius: 6px;
+$content-max-width: 1280px;
+$sidebar-width: 232px;
+$topbar-height: 48px;
+
+:root {
+    --hd-ink: #{$ink};
+    --hd-muted: #{$muted};
+    --hd-border: #{$border};
+    --hd-surface: #{$surface};
+    --hd-primary: #{$primary};
+    --hd-primary-hover: #{$primary-hover};
+    --hd-primary-tint: #{$primary-tint};
+    --hd-focus: #{$focus};
+    --hd-overdue: #{$overdue};
+    --hd-radius: #{$radius};
+    --hd-sidebar-width: #{$sidebar-width};
+    --hd-topbar-height: #{$topbar-height};
+}

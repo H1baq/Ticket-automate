@@ -1,0 +1,104 @@
+@use '../tokens' as *;
+
+.data-table {
+    margin-bottom: 0;
+
+    th {
+        font-size: 0.8125rem;
+        font-weight: 600;
+        color: $muted;
+        white-space: nowrap;
+        background: $surface;
+        border-bottom: 1px solid $border;
+    }
+
+    td {
+        vertical-align: middle;
+    }
+
+    th a {
+        display: inline-flex;
+        gap: 0.25rem;
+        align-items: center;
+        color: inherit;
+
+        &:hover {
+            color: $ink;
+        }
+    }
+
+    th[aria-sort='ascending'],
+    th[aria-sort='descending'] {
+        color: $ink;
+    }
+
+    .num {
+        text-align: right;
+    }
+
+    tbody tr.is-overdue > :first-child {
+        box-shadow: inset 3px 0 0 $overdue;
+    }
+}
+
+.table-card {
+    overflow: hidden;
+    background: $white;
+    border: 1px solid $border;
+    border-radius: $radius;
+}
+
+.pagination-bar {
+    display: flex;
+    flex-wrap: wrap;
+    gap: $space-1 $space-2;
+    align-items: center;
+    justify-content: space-between;
+    padding: $space-1 $space-2;
+    font-size: 0.875rem;
+    color: $muted;
+    border-top: 1px solid $border;
+
+    .pages {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.25rem;
+    }
+
+    .page-link-item {
+        min-width: 32px;
+        padding: 0.25rem 0.5rem;
+        font-weight: 600;
+        color: $ink;
+        text-align: center;
+        background: $white;
+        border: 1px solid $border;
+        border-radius: $radius;
+
+        &:hover {
+            background: $surface;
+        }
+
+        &[aria-current='page'] {
+            color: $white;
+            background: $primary;
+            border-color: $primary;
+        }
+
+        &[aria-disabled='true'] {
+            color: $muted;
+            pointer-events: none;
+            background: $surface;
+        }
+    }
+}
+
+.filter-bar {
+    display: flex;
+    flex-wrap: wrap;
+    gap: $space-1;
+    align-items: flex-end;
+    padding: $space-1 $space-2;
+    background: $white;
+    border-bottom: 1px solid $border;
+}

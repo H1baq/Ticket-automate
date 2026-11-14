@@ -1,0 +1,62 @@
+@use '../tokens' as *;
+
+// Toasts sit bottom-right and are announced politely to screen readers.
+.toast-region {
+    position: fixed;
+    right: $space-2;
+    bottom: $space-2;
+    z-index: 1090;
+    display: flex;
+    flex-direction: column;
+    gap: $space-1;
+    width: min(360px, calc(100vw - #{$space-4}));
+}
+
+.toast {
+    --toast-colour: #{$status-open};
+
+    width: 100%;
+    background: $white;
+    border-left: 4px solid var(--toast-colour);
+
+    &.toast-success {
+        --toast-colour: #{$status-resolved};
+    }
+
+    &.toast-error {
+        --toast-colour: #{$overdue};
+    }
+
+    .toast-body {
+        display: flex;
+        gap: $space-1;
+        align-items: flex-start;
+    }
+
+    .toast-icon {
+        margin-top: 0.125rem;
+        color: var(--toast-colour);
+    }
+
+    .toast-message {
+        flex: 1;
+        font-weight: 500;
+    }
+}
+
+.modal-title {
+    font-size: 1.0625rem;
+}
+
+.alert {
+    font-size: 0.9375rem;
+}
+
+.dropdown-menu {
+    font-size: 0.9375rem;
+}
+
+.dropdown-header {
+    font-size: 0.8125rem;
+    color: $muted;
+}

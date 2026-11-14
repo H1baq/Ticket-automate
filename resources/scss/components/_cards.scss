@@ -1,0 +1,92 @@
+@use '../tokens' as *;
+
+.card-header {
+    display: flex;
+    gap: $space-1;
+    align-items: center;
+    justify-content: space-between;
+    font-weight: 600;
+}
+
+.stat-tile {
+    display: block;
+    height: 100%;
+    padding: $space-2;
+    color: $ink;
+    background: $white;
+    border: 1px solid $border;
+    border-radius: $radius;
+
+    &:hover {
+        color: $ink;
+    }
+
+    &.is-link:hover {
+        border-color: $control-border;
+    }
+
+    &-label {
+        display: block;
+        font-size: 0.8125rem;
+        font-weight: 600;
+        color: $muted;
+    }
+
+    &-value {
+        display: block;
+        margin-top: 0.25rem;
+        font-size: 1.75rem;
+        font-weight: 600;
+        line-height: 1.15;
+    }
+
+    &-hint {
+        display: block;
+        margin-top: 0.25rem;
+        font-size: 0.8125rem;
+        color: $muted;
+    }
+
+    &.is-overdue &-value,
+    &.is-overdue &-label {
+        color: $overdue;
+    }
+
+    &.is-overdue {
+        border-color: $overdue;
+    }
+}
+
+.empty-state {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: $space-4 $space-2;
+    text-align: center;
+
+    .empty-icon {
+        display: grid;
+        width: 40px;
+        height: 40px;
+        margin-bottom: $space-1;
+        color: $muted;
+        place-items: center;
+        background: $surface;
+        border: 1px solid $border;
+        border-radius: $radius;
+    }
+
+    h2 {
+        margin: 0;
+    }
+
+    p {
+        max-width: 44ch;
+        margin: 0.25rem 0 0;
+        color: $muted;
+    }
+
+    .btn {
+        margin-top: $space-2;
+    }
+}
