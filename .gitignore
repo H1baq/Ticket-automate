@@ -1,0 +1,49 @@
+# Dependencies
+/vendor
+/node_modules
+
+# Environment and secrets
+.env
+.env.*
+!.env.example
+/auth.json
+
+# Build output and runtime files
+/public/build
+/public/hot
+/public/storage
+/storage/*.key
+/storage/pail
+/database/*.sqlite
+/database/*.sqlite-journal
+
+# Test, coverage and cache artefacts
+/.phpunit.cache
+.phpunit.result.cache
+/coverage
+/build
+.phpstan.cache
+.php-cs-fixer.cache
+.eslintcache
+.stylelintcache
+/tests/Browser/screenshots/*
+/tests/Browser/console/*
+/tests/Browser/source/*
+!/tests/Browser/screenshots/.gitignore
+!/tests/Browser/console/.gitignore
+!/tests/Browser/source/.gitignore
+
+# Editors, tools and OS files
+/.idea
+/.vscode
+/.fleet
+/.nova
+/.zed
+/.claude
+.phpactor.json
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+npm-debug.log*

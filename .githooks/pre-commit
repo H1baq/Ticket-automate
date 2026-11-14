@@ -1,0 +1,56 @@
+#!/usr/bin/env bash
+# Pre-commit: block risky files, then lint only what is staged.
+set -euo pipefail
+
+MAX_BYTES=$((2 * 1024 * 1024))
+PHP_BIN="${PHP_BIN:-php}"
+fail=0
+
+staged() {
+    git diff --cached --name-only --diff-filter=ACMR -z | tr '\0' '\n'
+}
+
+while IFS= read -r file; do
+    [ -z "$file" ] && continue
+    name="$(basename "$file")"
+
+    if [[ "$name" == .env* && "$name" != ".env.example" ]]; then
+        echo "pre-commit: refusing to commit environment file: $file" >&2
+        fail=1
+    fi
+
+    if [ -f "$file" ] && [ "$(wc -c < "$file")" -gt "$MAX_BYTES" ]; then
+        echo "pre-commit: $file is larger than 2 MB" >&2
+        fail=1
+    fi
+done < <(staged)
+
+[ "$fail" -eq 0 ] || exit 1
+
+php_files=()
+js_files=()
+scss_files=()
+while IFS= read -r file; do
+    case "$file" in
+        *.php) php_files+=("$file") ;;
+        resources/js/*.js) js_files+=("$file") ;;
+        resources/scss/*.scss) scss_files+=("$file") ;;
+    esac
+done < <(staged)
+
+if [ "${#php_files[@]}" -gt 0 ]; then
+    "$PHP_BIN" vendor/bin/pint --test "${php_files[@]}" || {
+        echo "pre-commit: run 'composer format' and stage the result." >&2
+        exit 1
+    }
+fi
+
+if [ "${#js_files[@]}" -gt 0 ]; then
+    npx --no-install eslint "${js_files[@]}"
+    npx --no-install prettier --check "${js_files[@]}"
+fi
+
+if [ "${#scss_files[@]}" -gt 0 ]; then
+    npx --no-install stylelint "${scss_files[@]}"
+    npx --no-install prettier --check "${scss_files[@]}"
+fi
