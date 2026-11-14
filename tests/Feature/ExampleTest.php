@@ -10,7 +10,8 @@ class ExampleTest extends TestCase
 {
     public function test_home_page_shows_the_application_name(): void
     {
-        $this->get('/')
+        $this->withoutVite()
+            ->get('/')
             ->assertOk()
             ->assertSee(config('app.name'));
     }

@@ -9,14 +9,12 @@ use Tests\DuskTestCase;
 
 class ExampleTest extends DuskTestCase
 {
-    /**
-     * A basic browser test example.
-     */
-    public function test_basic_example(): void
+    public function test_home_page_loads_in_a_real_browser(): void
     {
         $this->browse(function (Browser $browser): void {
             $browser->visit('/')
-                ->waitForText(config('app.name'));
+                ->assertTitle(config('app.name'))
+                ->assertSee('Help desk ticketing and management.');
         });
     }
 }
