@@ -87,6 +87,16 @@ class TicketPolicyTest extends TestCase
         $this->assertFalse($policy->create($this->user(9, UserRole::Admin)));
     }
 
+    public function test_only_active_staff_users_have_a_my_tickets_list(): void
+    {
+        $policy = new TicketPolicy();
+
+        $this->assertTrue($policy->viewAny($this->user(1, UserRole::User)));
+        $this->assertFalse($policy->viewAny($this->user(1, UserRole::User, false)));
+        $this->assertFalse($policy->viewAny($this->user(5, UserRole::Agent)));
+        $this->assertFalse($policy->viewAny($this->user(9, UserRole::Admin)));
+    }
+
     public function test_tickets_are_addressed_by_their_number(): void
     {
         $this->assertSame('ticket_no', (new Ticket())->getRouteKeyName());

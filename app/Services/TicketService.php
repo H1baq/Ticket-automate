@@ -11,6 +11,11 @@ use App\Models\SlaPolicy;
 use App\Models\Ticket;
 use App\Models\TicketHistory;
 use App\Models\User;
+use App\Support\LikeSearch;
+use App\Support\TicketFilters;
+use BackedEnum;
+use Illuminate\Contracts\Pagination\LengthAwarePaginator;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
@@ -167,5 +172,94 @@ class TicketService
         }
 
         return $path;
+    }
+
+    /**
+     * One page of a requester's own tickets, narrowed and sorted as asked. Only the requester's tickets
+     * are ever queried, so no filter can reach anyone else's.
+     *
+     * @return LengthAwarePaginator<int, Ticket>
+     */
+    public function paginateForRequester(User $requester, TicketFilters $filters, int $perPage): LengthAwarePaginator
+    {
+        $query = Ticket::query()->forRequester($requester)->with('category');
+
+        if ($filters->search !== null) {
+            LikeSearch::apply($query, ['ticket_no', 'title'], $filters->search);
+        }
+        if ($filters->statuses !== []) {
+            $query->whereIn('status', array_map(fn (TicketStatus $status): string => $status->value, $filters->statuses));
+        }
+        if ($filters->priority instanceof TicketPriority) {
+            $query->where('priority', $filters->priority);
+        }
+        if ($filters->categoryId !== null) {
+            $query->where('category_id', $filters->categoryId);
+        }
+        if ($filters->overdueOnly) {
+            $query->overdue();
+        }
+
+        $this->applySort($query, $filters);
+
+        return $query->paginate($perPage)->withQueryString();
+    }
+
+    /**
+     * The numbers on the staff member's list header, counted by the database.
+     *
+     * @return array{unresolved: int, overdue: int, resolved: int, closed: int}
+     */
+    public function summaryFor(User $requester): array
+    {
+        /** @var \Illuminate\Support\Collection<string, int> $perStatus */
+        $perStatus = Ticket::query()->forRequester($requester)
+            ->selectRaw('status, COUNT(*) as total')
+            ->groupBy('status')
+            ->pluck('total', 'status');
+
+        $unresolved = 0;
+        foreach (TicketStatus::unresolved() as $status) {
+            $unresolved += (int) ($perStatus[$status->value] ?? 0);
+        }
+
+        return [
+            'unresolved' => $unresolved,
+            'overdue' => Ticket::query()->forRequester($requester)->overdue()->count(),
+            'resolved' => (int) ($perStatus[TicketStatus::Resolved->value] ?? 0),
+            'closed' => (int) ($perStatus[TicketStatus::Closed->value] ?? 0),
+        ];
+    }
+
+    /**
+     * @param  Builder<Ticket>  $query
+     */
+    private function applySort(Builder $query, TicketFilters $filters): void
+    {
+        $direction = $filters->direction === 'asc' ? 'asc' : 'desc';
+
+        // Status and priority sort by meaning (workflow order, severity), not alphabetically. The CASE
+        // expressions are built only from enum values defined in code, never from request data.
+        match ($filters->sort) {
+            'status' => $query->orderByRaw($this->caseOrder('status', TicketStatus::cases()).' '.$direction),
+            'priority' => $query->orderByRaw($this->caseOrder('priority', [TicketPriority::Low, TicketPriority::Medium, TicketPriority::High]).' '.$direction),
+            'ticket_no', 'title', 'due_at', 'created_at' => $query->orderBy($filters->sort, $direction),
+            default => $query->orderBy('created_at', 'desc'),
+        };
+
+        $query->orderByDesc('id');
+    }
+
+    /**
+     * @param  list<BackedEnum>  $cases  In ascending order of meaning.
+     */
+    private function caseOrder(string $column, array $cases): string
+    {
+        $branches = '';
+        foreach ($cases as $position => $case) {
+            $branches .= " WHEN '{$case->value}' THEN {$position}";
+        }
+
+        return "CASE {$column}{$branches} END";
     }
 }

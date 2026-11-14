@@ -12,6 +12,19 @@ use App\Enums\UserRole;
 final class Navigation
 {
     /**
+     * The page the topbar search box sends a query to. Each role searches its own list, so a search
+     * never lands on a page the role may not open.
+     */
+    public static function searchRoute(UserRole $role): string
+    {
+        return match ($role) {
+            UserRole::User => 'tickets.index',
+            UserRole::Agent => 'agent.queue',
+            UserRole::Admin => 'admin.tickets.index',
+        };
+    }
+
+    /**
      * @return list<NavigationItem>
      */
     public static function for(UserRole $role): array

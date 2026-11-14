@@ -15,6 +15,14 @@ use App\Models\User;
 class TicketPolicy
 {
     /**
+     * Staff users have a list of the tickets they reported.
+     */
+    public function viewAny(User $user): bool
+    {
+        return $user->is_active && $user->role === UserRole::User;
+    }
+
+    /**
      * Only staff users report problems. Agents and administrators work on tickets, they do not submit them.
      */
     public function create(User $user): bool
