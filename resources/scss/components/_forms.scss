@@ -1,5 +1,9 @@
 @use '../tokens' as *;
 
+.form-label {
+    display: block;
+}
+
 .form-label .required {
     color: $overdue;
 }
