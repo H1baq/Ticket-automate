@@ -8,6 +8,7 @@ use Facebook\WebDriver\Chrome\ChromeOptions;
 use Facebook\WebDriver\Remote\DesiredCapabilities;
 use Facebook\WebDriver\Remote\RemoteWebDriver;
 use Illuminate\Support\Collection;
+use Laravel\Dusk\Browser;
 use Laravel\Dusk\TestCase as BaseTestCase;
 use PHPUnit\Framework\Attributes\BeforeClass;
 
@@ -22,6 +23,17 @@ abstract class DuskTestCase extends BaseTestCase
         if (! static::runningInSail()) {
             static::startChromeDriver(['--port=9515']);
         }
+    }
+
+    /**
+     * Make the browser behave like a 360px-wide phone. A plain window resize cannot go that narrow.
+     */
+    protected function emulatePhone(Browser $browser): void
+    {
+        $browser->driver->executeCustomCommand('/session/:sessionId/chromium/send_command', 'POST', [
+            'cmd' => 'Emulation.setDeviceMetricsOverride',
+            'params' => ['width' => 360, 'height' => 800, 'deviceScaleFactor' => 1, 'mobile' => false],
+        ]);
     }
 
     /**

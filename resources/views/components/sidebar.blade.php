@@ -33,8 +33,13 @@
     </nav>
 
     <div class="sidebar-footer">
-        <div><kbd>/</kbd> Search tickets</div>
-        <div><kbd>n</kbd> New ticket</div>
-        <div><kbd>g</kbd> then <kbd>d</kbd> Dashboard</div>
+        @foreach ($shortcuts() as $shortcut)
+            <div>
+                @foreach ($shortcut['keys'] as $key)
+                    @if (! $loop->first) then @endif<kbd>{{ $key }}</kbd>
+                @endforeach
+                {{ $shortcut['label'] }}
+            </div>
+        @endforeach
     </div>
 </aside>

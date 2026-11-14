@@ -10,14 +10,6 @@ use Tests\DuskTestCase;
 
 class UiGalleryTest extends DuskTestCase
 {
-    private function emulatePhone(Browser $browser): void
-    {
-        $browser->driver->executeCustomCommand('/session/:sessionId/chromium/send_command', 'POST', [
-            'cmd' => 'Emulation.setDeviceMetricsOverride',
-            'params' => ['width' => 360, 'height' => 800, 'deviceScaleFactor' => 1, 'mobile' => false],
-        ]);
-    }
-
     public function test_copy_button_copies_the_ticket_number_and_says_so(): void
     {
         $this->browse(function (Browser $browser): void {
