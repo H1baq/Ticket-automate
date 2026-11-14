@@ -3,6 +3,7 @@
 declare(strict_types=1);
 
 use App\Http\Controllers\Admin\AssignmentController;
+use App\Http\Controllers\Admin\SlaController;
 use App\Http\Controllers\Admin\UserController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\Dev\UiGalleryController;
@@ -26,6 +27,8 @@ Route::middleware(['auth', 'active'])->group(function (): void {
     });
 
     Route::prefix('admin')->name('admin.')->middleware('role:admin')->group(function (): void {
+        Route::get('sla', [SlaController::class, 'edit'])->name('sla.edit');
+        Route::put('sla', [SlaController::class, 'update'])->name('sla.update');
         Route::get('assignments', [AssignmentController::class, 'index'])->name('assignments.index');
         Route::put('tickets/{ticket}/agent', [AssignmentController::class, 'assign'])->name('tickets.assign')->where('ticket', 'HD-[0-9]{4}-[0-9]{5,}');
 

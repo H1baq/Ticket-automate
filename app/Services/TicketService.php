@@ -186,18 +186,6 @@ class TicketService
     }
 
     /**
-     * How many hours each priority is given, keyed by priority value, so the form can promise a time.
-     *
-     * @return array<string, int>
-     */
-    public function resolutionHoursByPriority(): array
-    {
-        return SlaPolicy::query()->get()
-            ->mapWithKeys(fn (SlaPolicy $policy): array => [$policy->priority->value => $policy->resolution_hours])
-            ->all();
-    }
-
-    /**
      * One page of a requester's own tickets, narrowed and sorted as asked. Only the requester's tickets
      * are ever queried, so no filter can reach anyone else's.
      *

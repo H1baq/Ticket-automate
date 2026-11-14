@@ -12,6 +12,7 @@ use App\Models\Category;
 use App\Models\Ticket;
 use App\Models\User;
 use App\Services\AssignmentService;
+use App\Services\SlaService;
 use App\Services\TicketService;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -19,7 +20,7 @@ use Illuminate\View\View;
 
 class TicketController extends Controller
 {
-    public function __construct(private readonly TicketService $tickets, private readonly AssignmentService $assignments)
+    public function __construct(private readonly TicketService $tickets, private readonly AssignmentService $assignments, private readonly SlaService $sla)
     {
     }
 
@@ -30,7 +31,7 @@ class TicketController extends Controller
         return view('tickets.create', [
             'categories' => $this->tickets->activeCategories(),
             'priorities' => TicketPriority::cases(),
-            'hours' => $this->tickets->resolutionHoursByPriority(),
+            'hours' => $this->sla->hoursByPriority(),
         ]);
     }
 
