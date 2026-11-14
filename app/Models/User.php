@@ -10,6 +10,7 @@ use Database\Factories\UserFactory;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Foundation\Auth\User as Authenticatable;
+use Illuminate\Notifications\RoutesNotifications;
 
 /**
  * @property int $id
@@ -27,6 +28,8 @@ class User extends Authenticatable
 {
     /** @use HasFactory<UserFactory> */
     use HasFactory;
+    // Only notify() and mail routing; our own notifications() relation replaces Laravel's database one.
+    use RoutesNotifications;
 
     /**
      * Role, activation and lockout fields are not mass assignable on purpose:

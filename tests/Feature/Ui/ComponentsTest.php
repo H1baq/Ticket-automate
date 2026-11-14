@@ -14,6 +14,7 @@ use App\Models\TicketHistory;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Pagination\LengthAwarePaginator;
+use Illuminate\Routing\RouteCollection;
 use Illuminate\Support\Facades\Blade;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\MessageBag;
@@ -39,6 +40,9 @@ class ComponentsTest extends TestCase
      */
     private function defineRoutes(array $names): void
     {
+        // Start from an empty route table so these tests do not depend on which pages the app has yet.
+        Route::setRoutes(new RouteCollection());
+
         foreach ($names as $name) {
             Route::get('/_test/'.$name, fn (): string => 'ok')->name($name);
         }
@@ -333,6 +337,7 @@ class ComponentsTest extends TestCase
     public function test_topbar_offers_search_and_sign_out_only_when_those_pages_exist(): void
     {
         $user = User::factory()->create();
+        $this->defineRoutes([]);
 
         $this->actingAs($user)->blade('<x-topbar />')
             ->assertDontSee('data-shortcut-search', false)
