@@ -39,6 +39,11 @@ while IFS= read -r file; do
 done < <(staged)
 
 if [ "${#php_files[@]}" -gt 0 ]; then
+    if ! command -v "$PHP_BIN" > /dev/null 2>&1; then
+        echo "pre-commit: '$PHP_BIN' was not found. Add PHP to your PATH or set PHP_BIN." >&2
+        exit 1
+    fi
+
     "$PHP_BIN" vendor/bin/pint --test "${php_files[@]}" || {
         echo "pre-commit: run 'composer format' and stage the result." >&2
         exit 1

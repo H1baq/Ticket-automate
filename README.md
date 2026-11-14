@@ -70,10 +70,23 @@ These steps use [php.new](https://php.new) for PHP and Composer, and
     `hdtms` is the application database and `hdtms_test` is used by the test
     suite.
 
-6. **Build the assets and start the app.**
+6. **Create the tables and seed the data.** Set `SEED_ADMIN_EMAIL` and
+   `SEED_ADMIN_PASSWORD` in `.env` first (use at least 8 characters), then run:
 
     ```bash
-    php artisan migrate
+    php artisan migrate --seed
+    ```
+
+    This creates the six default categories, the SLA times (high 4 hours,
+    medium 8 hours, low 24 hours) and your administrator account. Outside
+    production it also creates demo staff, agents and about 150 tickets. Every
+    demo account (for example `brian.otieno@helpdesk.test`) has the password
+    `password`. To start again with fresh demo data, run
+    `php artisan migrate:fresh --seed`.
+
+7. **Build the assets and start the app.**
+
+    ```bash
     npm run build
     php artisan serve
     ```

@@ -4,24 +4,19 @@ declare(strict_types=1);
 
 namespace Database\Factories;
 
+use App\Enums\UserRole;
 use App\Models\User;
 use Illuminate\Database\Eloquent\Factories\Factory;
 use Illuminate\Support\Facades\Hash;
-use Illuminate\Support\Str;
 
 /**
  * @extends Factory<User>
  */
 class UserFactory extends Factory
 {
-    /**
-     * The current password being used by the factory.
-     */
-    protected static ?string $password;
+    protected static ?string $password = null;
 
     /**
-     * Define the model's default state.
-     *
      * @return array<string, mixed>
      */
     public function definition(): array
@@ -29,19 +24,36 @@ class UserFactory extends Factory
         return [
             'name' => fake()->name(),
             'email' => fake()->unique()->safeEmail(),
-            'email_verified_at' => now(),
             'password' => static::$password ??= Hash::make('password'),
-            'remember_token' => Str::random(10),
+            'role' => UserRole::User,
+            'department' => fake()->randomElement(['Finance', 'Registry', 'Human Resources', 'Library']),
+            'is_active' => true,
+            'failed_logins' => 0,
+            'locked_until' => null,
+            'remember_token' => fake()->regexify('[A-Za-z0-9]{10}'),
         ];
     }
 
-    /**
-     * Indicate that the model's email address should be unverified.
-     */
-    public function unverified(): static
+    public function agent(): static
     {
-        return $this->state(fn (array $attributes) => [
-            'email_verified_at' => null,
+        return $this->state(['role' => UserRole::Agent, 'department' => 'ICT']);
+    }
+
+    public function admin(): static
+    {
+        return $this->state(['role' => UserRole::Admin, 'department' => 'ICT']);
+    }
+
+    public function inactive(): static
+    {
+        return $this->state(['is_active' => false]);
+    }
+
+    public function locked(): static
+    {
+        return $this->state(fn (): array => [
+            'failed_logins' => 5,
+            'locked_until' => now()->addMinutes(15),
         ]);
     }
 }
