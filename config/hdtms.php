@@ -21,6 +21,28 @@ return [
 
     /*
     |--------------------------------------------------------------------------
+    | Authentication
+    |--------------------------------------------------------------------------
+    |
+    | Self-registration is off unless switched on in .env. When it is on, only
+    | email addresses ending in one of the allowed domains can register; leave the
+    | list empty to allow any address.
+    |
+    */
+
+    'auth' => [
+        'self_registration' => (bool) env('SELF_REGISTRATION_ENABLED', false),
+        'allowed_email_domains' => array_values(array_filter(array_map(
+            'trim',
+            explode(',', (string) env('ALLOWED_EMAIL_DOMAINS', '')),
+        ))),
+        'max_failed_logins' => 5,
+        'lockout_minutes' => 15,
+        'password_min_length' => 8,
+    ],
+
+    /*
+    |--------------------------------------------------------------------------
     | Branding
     |--------------------------------------------------------------------------
     |
