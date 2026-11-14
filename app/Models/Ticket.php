@@ -41,6 +41,15 @@ class Ticket extends Model
     use HasFactory;
 
     /**
+     * Defaults that match the database, so a new model reports them before it is reloaded.
+     *
+     * @var array<string, mixed>
+     */
+    protected $attributes = [
+        'escalation_level' => 0,
+    ];
+
+    /**
      * Only the fields a ticket is created with. Agent, escalation and
      * resolution fields are set explicitly by the services that own them.
      *
