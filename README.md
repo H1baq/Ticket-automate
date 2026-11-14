@@ -128,6 +128,19 @@ so `composer test` runs without coverage on a Mac. Coverage is measured in
 CI, which fails the build when line coverage of `app/Services` falls below
 80%.
 
+## Design system
+
+The interface is built from Blade components in `resources/views/components` and
+Sass in `resources/scss` (`_tokens.scss` holds every colour, size and font). To
+see every component with sample data, open <http://localhost:8000/dev/ui> while
+`APP_ENV=local`. Add `?role=user`, `?role=agent` or `?role=admin` to preview each
+sidebar. The page returns 404 in every other environment.
+
+Keyboard shortcuts: `/` focuses search, `n` opens a new ticket, and `g` then `d`
+goes to the dashboard. They are ignored while you type in a field.
+
+To rebrand the product, set `ORGANIZATION_NAME` and `ORGANIZATION_LOGO` in `.env`.
+
 ## Scheduler and queue
 
 Notifications and emails are queued, and escalation and auto-close run on the

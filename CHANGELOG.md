@@ -34,7 +34,20 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   (`SEED_ADMIN_EMAIL`, `SEED_ADMIN_PASSWORD`), and a demo seeder with 150
   tickets that never runs in production.
 
+- Design system: Sass tokens and a Bootstrap 5.3 theme (only the modules in use),
+  self-hosted Source Sans 3 and JetBrains Mono, and Blade components for layouts,
+  role-aware navigation, badges, tables, forms, modals, toasts, pagination and the
+  ticket timeline.
+- JavaScript behaviours as separate modules: toasts, confirm modal, keyboard
+  shortcuts (`n`, `/`, `g` then `d`), disable-on-submit, copy ticket number and
+  character counter. No inline scripts.
+- Friendly 403, 404, 419, 429 and 500 pages.
+- Local-only component gallery at `/dev/ui`.
+- Branding settings `ORGANIZATION_NAME` and `ORGANIZATION_LOGO`.
+
 ### Changed
+
+- Dates are immutable application-wide.
 
 - The pre-commit hook now says clearly when PHP cannot be found.
 
