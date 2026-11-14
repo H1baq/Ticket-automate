@@ -8,11 +8,14 @@ use Tests\TestCase;
 
 class ExampleTest extends TestCase
 {
-    public function test_home_page_shows_the_application_name(): void
+    public function test_the_home_address_leads_a_visitor_to_the_sign_in_page(): void
     {
-        $this->withoutVite()
-            ->get('/')
+        $this->withoutVite();
+
+        $this->get('/')->assertRedirect('/dashboard');
+        $this->followingRedirects()->get('/')
             ->assertOk()
+            ->assertSee('Sign in')
             ->assertSee(config('app.name'));
     }
 }
