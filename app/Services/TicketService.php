@@ -243,6 +243,19 @@ class TicketService
     }
 
     /**
+     * How many unresolved tickets an agent has been given and how many of those are already overdue.
+     *
+     * @return array{unresolved: int, overdue: int}
+     */
+    public function assignedSummaryFor(User $agent): array
+    {
+        return [
+            'unresolved' => Ticket::query()->forAgent($agent)->open()->count(),
+            'overdue' => Ticket::query()->forAgent($agent)->overdue()->count(),
+        ];
+    }
+
+    /**
      * @param  Builder<Ticket>  $query
      */
     private function applySort(Builder $query, TicketFilters $filters): void
