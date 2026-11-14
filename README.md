@@ -88,11 +88,16 @@ These steps use [php.new](https://php.new) for PHP and Composer, and
 
     ```bash
     npm run build
-    php artisan serve
+    composer serve
     ```
 
     Open <http://localhost:8000>. For frontend work, run `npm run dev` in a
     second terminal instead of `npm run build`.
+
+    Use `composer serve` rather than `php artisan serve`. It starts PHP's built-in server with
+    the upload limit raised from PHP's default of 2 MB, so ticket attachments of up to 5 MB
+    work. If you start the server another way, set `upload_max_filesize = 6M` and
+    `post_max_size = 8M` in your `php.ini`.
 
 ## Commands
 
@@ -106,7 +111,7 @@ These steps use [php.new](https://php.new) for PHP and Composer, and
 | `npm run lint`                      | ESLint, Stylelint and Prettier check                   |
 | `npm run format`                    | Rewrite JS and SCSS with Prettier                      |
 | `npm run build` / `npm run dev`     | Production build / Vite dev server                     |
-| `php artisan serve`                 | Start the app on port 8000                             |
+| `composer serve`                    | Start the app on port 8000 with the upload limits set  |
 
 ### Browser tests
 
@@ -114,7 +119,7 @@ Dusk drives a real Chrome against a running server. Start the app, then run
 the tests in a second terminal:
 
 ```bash
-php artisan serve
+composer serve
 php artisan dusk
 ```
 
@@ -149,6 +154,14 @@ the password `password`.
   and department, deactivate and reactivate. Accounts are never deleted. When you create
   a user, an email with a link to choose a password is queued, so run
   `php artisan queue:work` or no email is sent.
+
+## Tickets
+
+Staff report a problem under **My tickets** (or press `n`). Each ticket gets a number like
+`HD-2026-00142` and a due time from the SLA hours of its priority (high 4, medium 8, low 24).
+A ticket may have one attachment: a JPG, PNG or PDF of up to 5 MB. Attachments are stored
+privately and can only be downloaded by the person who reported the ticket, the agent it is
+assigned to, and administrators. Only the numbers matter in the address: `/tickets/HD-2026-00142`.
 
 ## Design system
 

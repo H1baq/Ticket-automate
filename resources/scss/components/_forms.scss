@@ -4,6 +4,14 @@
     display: block;
 }
 
+// A group of choices is labelled by a <legend>, which browsers draw as a heading unless told otherwise.
+legend.form-label {
+    float: none;
+    width: auto;
+    padding: 0;
+    font-size: inherit;
+}
+
 .form-label .required {
     color: $overdue;
 }
@@ -78,5 +86,71 @@
     &[disabled],
     &.disabled {
         opacity: 0.65;
+    }
+}
+
+// A radio with a title and a sentence under it, for choices people need explained.
+.choice {
+    display: flex;
+    gap: $space-1;
+    align-items: flex-start;
+    padding: 0.5rem 0.75rem;
+    margin-bottom: 0.5rem;
+    background: $white;
+    border: 1px solid $control-border;
+    border-radius: $radius;
+
+    &:has(input:checked) {
+        background: $primary-tint;
+        border-color: $primary;
+    }
+
+    &:has(input:focus-visible) {
+        outline: 2px solid $focus;
+        outline-offset: 2px;
+    }
+
+    &.is-invalid {
+        border-color: $overdue;
+    }
+
+    .form-check-input {
+        flex: none;
+        margin-top: 0.25rem;
+    }
+}
+
+.choice-label {
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+    cursor: pointer;
+}
+
+.choice-title {
+    font-weight: 600;
+}
+
+.choice-hint {
+    font-size: 0.875rem;
+    color: $muted;
+}
+
+.category-guide {
+    padding: 0;
+    margin: 0;
+    list-style: none;
+
+    li + li {
+        margin-top: $space-1;
+    }
+
+    strong {
+        display: block;
+    }
+
+    span {
+        font-size: 0.875rem;
+        color: $muted;
     }
 }

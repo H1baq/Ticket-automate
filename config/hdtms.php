@@ -43,6 +43,21 @@ return [
 
     /*
     |--------------------------------------------------------------------------
+    | Tickets
+    |--------------------------------------------------------------------------
+    |
+    | One attachment per ticket. The type is checked from the file's content, not its name.
+    |
+    */
+
+    'tickets' => [
+        'attachment_max_kb' => 5120,
+        'attachment_extensions' => ['jpg', 'jpeg', 'png', 'pdf'],
+        'attachment_mime_types' => ['image/jpeg', 'image/png', 'application/pdf'],
+    ],
+
+    /*
+    |--------------------------------------------------------------------------
     | Branding
     |--------------------------------------------------------------------------
     |

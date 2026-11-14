@@ -7,6 +7,7 @@ namespace App\Services;
 use App\Enums\TicketPriority;
 use App\Enums\TicketStatus;
 use App\Events\TicketCreated;
+use App\Models\Category;
 use App\Models\SlaPolicy;
 use App\Models\Ticket;
 use App\Models\TicketHistory;
@@ -172,6 +173,28 @@ class TicketService
         }
 
         return $path;
+    }
+
+    /**
+     * Categories a new ticket may be filed under, for the form.
+     *
+     * @return \Illuminate\Database\Eloquent\Collection<int, Category>
+     */
+    public function activeCategories(): \Illuminate\Database\Eloquent\Collection
+    {
+        return Category::query()->where('is_active', true)->orderBy('name')->get(['id', 'name', 'description']);
+    }
+
+    /**
+     * How many hours each priority is given, keyed by priority value, so the form can promise a time.
+     *
+     * @return array<string, int>
+     */
+    public function resolutionHoursByPriority(): array
+    {
+        return SlaPolicy::query()->get()
+            ->mapWithKeys(fn (SlaPolicy $policy): array => [$policy->priority->value => $policy->resolution_hours])
+            ->all();
     }
 
     /**

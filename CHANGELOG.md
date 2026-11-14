@@ -54,9 +54,18 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   reactivate, with a queued email that lets a new user choose a password.
 - A minimal dashboard as the landing page for every role.
 
+- Ticket submission: a form with a category guide and priorities explained in plain words with the
+  time we aim for, one private attachment (JPG, PNG or PDF, 5 MB), numbers `HD-YYYY-NNNNN` issued
+  one at a time under a lock, and a due time from the SLA policy.
+- "My tickets" list with counts, filters kept in the address, sortable columns and 20 a page, and a
+  ticket page with description, conversation, history and an authorized attachment download.
+- `TicketPolicy`: the requester, the assigned agent and administrators may view a ticket.
+- `composer serve`, which raises PHP's 2 MB upload limit for local development.
+
 ### Changed
 
 - Dates are immutable application-wide.
+- The private disk is no longer served by address.
 - The home address now leads to the dashboard, or to sign-in for visitors.
 - The sidebar shortcut legend lists only shortcuts that work for the signed-in user.
 

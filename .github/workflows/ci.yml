@@ -186,6 +186,7 @@ jobs:
         with:
           php-version: ${{ env.PHP_VERSION }}
           coverage: none
+          ini-values: upload_max_filesize=6M, post_max_size=8M
 
       - name: Cache Composer packages
         uses: actions/cache@v4

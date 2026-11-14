@@ -1,5 +1,9 @@
 <x-layout.app title="My tickets">
-    <x-page-header title="My tickets" />
+    <x-page-header title="My tickets">
+        <x-slot:actions>
+            <x-button :href="route('tickets.create')"><x-icon name="plus" /> Report a problem</x-button>
+        </x-slot:actions>
+    </x-page-header>
 
     <div class="row g-3 mb-3">
         <div class="col-6 col-lg-3"><x-stat-tile label="Unresolved" :value="$summary['unresolved']" hint="Open or being worked on" :href="route('tickets.index', ['status' => 'unresolved'])" /></div>
@@ -92,7 +96,9 @@
                     <x-button variant="secondary" :href="route('tickets.index')">Clear filters</x-button>
                 </x-empty-state>
             @else
-                <x-empty-state icon="ticket" title="You have not reported a problem yet" text="When something is not working, tell us and an agent will pick it up." />
+                <x-empty-state icon="ticket" title="You have not reported a problem yet" text="When something is not working, tell us and an agent will pick it up.">
+                    <x-button :href="route('tickets.create')">Report a problem</x-button>
+                </x-empty-state>
             @endif
         </x-slot:empty>
     </x-data-table>
