@@ -35,7 +35,8 @@ return [
         'local' => [
             'driver' => 'local',
             'root' => storage_path('app/private'),
-            'serve' => true,
+            // Private files (ticket attachments) are never served by address; only an authorized route sends them.
+            'serve' => false,
             'throw' => false,
             'report' => false,
         ],

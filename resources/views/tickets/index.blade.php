@@ -72,8 +72,8 @@
 
         @foreach ($tickets as $ticket)
             <tr @class(['is-overdue' => $ticket->isOverdue()])>
-                <td><x-ticket-no :number="$ticket->ticket_no" /></td>
-                <td>{{ $ticket->title }}</td>
+                <td><x-ticket-no :number="$ticket->ticket_no" :link="route('tickets.show', $ticket)" /></td>
+                <td><a href="{{ route('tickets.show', $ticket) }}" class="text-body">{{ $ticket->title }}</a></td>
                 <td>{{ $ticket->category->name }}</td>
                 <td><x-status-badge :status="$ticket->status" :overdue="$ticket->isOverdue()" /></td>
                 <td><x-priority-badge :priority="$ticket->priority" /></td>

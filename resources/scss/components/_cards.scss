@@ -90,3 +90,48 @@
         margin-top: $space-2;
     }
 }
+
+// Ticket text keeps the line breaks people typed. It is always escaped, never rendered as HTML.
+.ticket-text {
+    overflow-wrap: anywhere;
+    white-space: pre-wrap;
+}
+
+.conversation-item {
+    padding: $space-1 0;
+
+    & + & {
+        border-top: 1px solid $border;
+    }
+
+    &.is-internal {
+        padding-inline: $space-1;
+        margin-inline: (-$space-1);
+        background: $surface;
+        border-left: 3px solid $muted;
+    }
+}
+
+.internal-note-label {
+    padding: 0 0.375rem;
+    font-size: 0.75rem;
+    font-weight: 700;
+    color: $ink;
+    border: 1px solid $muted;
+    border-radius: 4px;
+}
+
+.detail-list {
+    display: grid;
+    gap: 0.5rem 1rem;
+    grid-template-columns: max-content 1fr;
+
+    dt {
+        font-weight: 600;
+        color: $muted;
+    }
+
+    dd {
+        margin: 0;
+    }
+}

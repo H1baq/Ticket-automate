@@ -24,6 +24,22 @@ enum TicketStatus: string
     }
 
     /**
+     * One plain sentence for the person who reported the ticket, saying where it stands.
+     */
+    public function requesterHint(?string $agentName): string
+    {
+        $agent = $agentName ?? 'An agent';
+
+        return match ($this) {
+            self::Open => 'Waiting for an agent to be assigned.',
+            self::Assigned => "{$agent} has been assigned and will start soon.",
+            self::InProgress => "{$agent} is working on this.",
+            self::Resolved => 'Marked as resolved. Please check that it works, then confirm or reopen it.',
+            self::Closed => 'This ticket is closed.',
+        };
+    }
+
+    /**
      * Hex colour of the status badge. Matches the tokens in resources/scss/_tokens.scss.
      */
     public function colour(): string
