@@ -1,7 +1,7 @@
 <x-layout.app :title="$ticket->ticket_no">
     <x-page-header
         :title="$ticket->title"
-        :breadcrumbs="auth()->user()->can('viewAny', App\Models\Ticket::class)
+        :breadcrumbs="$ticket->requester_id === $viewer->id
             ? ['My tickets' => route('tickets.index'), $ticket->ticket_no => null]
             : ['Tickets' => null, $ticket->ticket_no => null]" />
 

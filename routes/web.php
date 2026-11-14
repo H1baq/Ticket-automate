@@ -15,13 +15,11 @@ Route::middleware(['auth', 'active'])->group(function (): void {
     Route::get('/dashboard', DashboardController::class)->name('dashboard');
 
     Route::prefix('tickets')->name('tickets.')->group(function (): void {
-        Route::middleware('role:user')->group(function (): void {
-            Route::get('/', [TicketController::class, 'index'])->name('index');
-            Route::get('create', [TicketController::class, 'create'])->name('create');
-            Route::post('/', [TicketController::class, 'store'])->middleware('throttle:ticket-creation')->name('store');
-        });
+        Route::get('/', [TicketController::class, 'index'])->name('index');
+        Route::get('create', [TicketController::class, 'create'])->name('create');
+        Route::post('/', [TicketController::class, 'store'])->middleware('throttle:ticket-creation')->name('store');
 
-        // Agents and administrators open tickets too, so these are guarded by the policy, not a role.
+        // Every active user has their own tickets; the policy decides who may open any one of them.
         Route::get('{ticket}', [TicketController::class, 'show'])->name('show')->where('ticket', 'HD-[0-9]{4}-[0-9]{5,}');
         Route::get('{ticket}/attachment', TicketAttachmentController::class)->name('attachment')->where('ticket', 'HD-[0-9]{4}-[0-9]{5,}');
     });

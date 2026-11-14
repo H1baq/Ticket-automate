@@ -58,7 +58,7 @@ class TicketController extends Controller
             'agent',
             'category',
             'history' => fn ($history) => $history->oldest('created_at')->oldest('id')->with('changedBy'),
-            'responses' => fn ($responses) => $responses->visibleTo($viewer)->oldest('created_at')->oldest('id')->with('user'),
+            'responses' => fn ($responses) => $responses->visibleTo($viewer, $ticket->requester_id)->oldest('created_at')->oldest('id')->with('user'),
         ]);
 
         return view('tickets.show', ['ticket' => $ticket, 'viewer' => $viewer]);

@@ -31,17 +31,20 @@ final class Navigation
     {
         $dashboard = new NavigationItem('Dashboard', 'dashboard', 'home', ['dashboard'], 'dashboard');
         $notifications = new NavigationItem('Notifications', 'notifications.index', 'bell', ['notifications.*']);
+        $newTicket = new NavigationItem('New ticket', 'tickets.create', 'plus', ['tickets.create'], 'new-ticket');
 
         return match ($role) {
             UserRole::User => [
                 $dashboard,
                 new NavigationItem('My tickets', 'tickets.index', 'ticket', ['tickets.index', 'tickets.show']),
-                new NavigationItem('New ticket', 'tickets.create', 'plus', ['tickets.create'], 'new-ticket'),
+                $newTicket,
                 $notifications,
             ],
             UserRole::Agent => [
                 $dashboard,
                 new NavigationItem('My queue', 'agent.queue', 'inbox', ['agent.*']),
+                new NavigationItem('My tickets', 'tickets.index', 'ticket', ['tickets.index']),
+                $newTicket,
                 $notifications,
             ],
             UserRole::Admin => [
@@ -49,6 +52,8 @@ final class Navigation
                 new NavigationItem('Assignment queue', 'admin.assignments.index', 'inbox', ['admin.assignments.*']),
                 new NavigationItem('All tickets', 'admin.tickets.index', 'ticket', ['admin.tickets.*']),
                 new NavigationItem('Reports', 'admin.reports.index', 'bar-chart', ['admin.reports.*']),
+                new NavigationItem('My tickets', 'tickets.index', 'ticket', ['tickets.index']),
+                $newTicket,
                 new NavigationItem('Users', 'admin.users.index', 'users', ['admin.users.*'], null, 'System'),
                 new NavigationItem('Categories', 'admin.categories.index', 'tag', ['admin.categories.*'], null, 'System'),
                 new NavigationItem('SLA settings', 'admin.sla.edit', 'clock', ['admin.sla.*'], null, 'System'),

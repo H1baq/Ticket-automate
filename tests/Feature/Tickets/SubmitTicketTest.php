@@ -200,14 +200,27 @@ class SubmitTicketTest extends TestCase
 
     // --- who may submit ---------------------------------------------------------------------
 
-    public function test_agents_and_administrators_cannot_submit_tickets(): void
+    public function test_agents_and_administrators_report_problems_of_their_own_like_anyone_else(): void
     {
         foreach ([User::factory()->agent()->create(), User::factory()->admin()->create()] as $user) {
-            $this->actingAs($user)->get('/tickets/create')->assertForbidden();
-            $this->actingAs($user)->post('/tickets', $this->validInput())->assertForbidden();
-        }
+            $this->actingAs($user)->post('/tickets', $this->validInput(['title' => "Problem reported by {$user->role->value}"]))->assertRedirect();
 
-        $this->assertDatabaseCount('tickets', 0);
+            $ticket = Ticket::query()->where('title', "Problem reported by {$user->role->value}")->sole();
+            $this->assertSame($user->id, $ticket->requester_id);
+            $this->assertSame(TicketStatus::Open, $ticket->status);
+            $this->assertNull($ticket->agent_id, 'Reporting a ticket never assigns it to the reporter.');
+            $this->actingAs($user)->get('/tickets/'.$ticket->ticket_no)->assertOk()->assertSee("Problem reported by {$user->role->value}");
+            $this->actingAs($user)->get('/tickets')->assertSee("Problem reported by {$user->role->value}");
+        }
+    }
+
+    public function test_an_agent_cannot_report_a_ticket_for_somebody_else(): void
+    {
+        $agent = User::factory()->agent()->create();
+
+        $this->actingAs($agent)->post('/tickets', $this->validInput(['requester_id' => $this->me->id]))->assertRedirect();
+
+        $this->assertSame($agent->id, Ticket::query()->sole()->requester_id, 'Raising a ticket on behalf of another user is not supported.');
     }
 
     public function test_a_visitor_who_is_not_signed_in_is_sent_to_sign_in(): void

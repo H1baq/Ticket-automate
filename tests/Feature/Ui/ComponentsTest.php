@@ -293,7 +293,7 @@ class ComponentsTest extends TestCase
         $this->actingAs(User::factory()->create())->blade('<x-sidebar />')->assertDontSee('Users');
 
         $admin = User::factory()->admin()->create();
-        $this->actingAs($admin)->blade('<x-sidebar />')->assertSee('Users')->assertDontSee('My tickets');
+        $this->actingAs($admin)->blade('<x-sidebar />')->assertSee('Users')->assertSee('My tickets');
     }
 
     public function test_the_shortcut_legend_lists_only_shortcuts_that_work_for_the_user(): void
@@ -306,8 +306,12 @@ class ComponentsTest extends TestCase
             ->assertSee('Search');
 
         $this->actingAs(User::factory()->admin()->create())->blade('<x-sidebar />')
-            ->assertDontSee('New ticket')
+            ->assertSee('New ticket')
             ->assertSee('Search');
+
+        $this->defineRoutes(['dashboard', 'admin.users.index']);
+        $this->actingAs(User::factory()->admin()->create())->blade('<x-sidebar />')
+            ->assertDontSee('New ticket');
     }
 
     public function test_sidebar_without_a_signed_in_user_is_empty(): void

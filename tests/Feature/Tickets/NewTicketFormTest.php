@@ -126,9 +126,11 @@ class NewTicketFormTest extends TestCase
         $this->actingAs($this->me)->get('/tickets')->assertSee('data-shortcut="new-ticket"', false);
     }
 
-    public function test_agents_and_admins_have_no_new_ticket_menu_item(): void
+    public function test_agents_and_admins_have_the_new_ticket_menu_item_and_shortcut_too(): void
     {
-        $this->actingAs(User::factory()->agent()->create())->get('/dashboard')->assertDontSee('New ticket');
-        $this->actingAs(User::factory()->admin()->create())->get('/dashboard')->assertDontSee('New ticket');
+        foreach ([User::factory()->agent()->create(), User::factory()->admin()->create()] as $user) {
+            $this->actingAs($user)->get('/dashboard')->assertSee('New ticket')->assertSee('data-shortcut="new-ticket"', false);
+            $this->actingAs($user)->get('/tickets/create')->assertOk()->assertSee('Report a problem');
+        }
     }
 }

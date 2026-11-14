@@ -157,7 +157,7 @@ the password `password`.
 
 ## Tickets
 
-Staff report a problem under **My tickets** (or press `n`). Each ticket gets a number like
+Anyone with an account reports a problem under **My tickets** (or presses `n`). Each person sees only the tickets they reported there. Each ticket gets a number like
 `HD-2026-00142` and a due time from the SLA hours of its priority (high 4, medium 8, low 24).
 A ticket may have one attachment: a JPG, PNG or PDF of up to 5 MB. Attachments are stored
 privately and can only be downloaded by the person who reported the ticket, the agent it is

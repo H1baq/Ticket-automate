@@ -104,6 +104,33 @@ class TicketSubmissionTest extends DuskTestCase
         $this->assertSame(3 * 1024 * 1024, Storage::disk('local')->size($ticket->attachment_path), 'The whole file must have arrived.');
     }
 
+    public function test_an_agent_reports_a_problem_of_their_own_from_their_menu(): void
+    {
+        $email = $this->emails[] = 'dusk.agent.'.Str::lower(Str::random(8)).'@example.test';
+        $agent = User::factory()->agent()->create(['name' => 'Agent Dusk', 'email' => $email]);
+
+        $this->browse(function (Browser $browser) use ($agent): void {
+            $browser->loginAs($agent)
+                ->visit('/dashboard')
+                ->assertSeeIn('#sidebar', 'My tickets')
+                ->assertSeeIn('#sidebar', 'New ticket')
+                ->keys('', 'n')
+                ->waitForLocation('/tickets/create')
+                ->type('title', 'My own laptop will not charge')
+                ->select('category_id', (string) \App\Models\Category::query()->where('name', 'Hardware')->value('id'))
+                ->radio('priority', 'low')
+                ->type('description', 'The charger light is on but the battery stays at 12 percent.')
+                ->press('Submit ticket')
+                ->waitUntil('window.location.pathname.startsWith("/tickets/HD-")', 20)
+                ->assertSee('My own laptop will not charge')
+                ->assertSee('Waiting for an agent to be assigned.')
+                ->visit('/tickets')
+                ->assertSee('My own laptop will not charge');
+        });
+
+        $this->assertNull(Ticket::query()->where('requester_id', $agent->id)->sole()->agent_id);
+    }
+
     public function test_the_ticket_appears_in_my_tickets_and_its_number_can_be_copied(): void
     {
         $user = $this->staffUser();
