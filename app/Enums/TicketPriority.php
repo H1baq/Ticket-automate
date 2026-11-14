@@ -20,6 +20,18 @@ enum TicketPriority: string
     }
 
     /**
+     * 1 (low) to 3 (high), used to draw the priority bars.
+     */
+    public function level(): int
+    {
+        return match ($this) {
+            self::Low => 1,
+            self::Medium => 2,
+            self::High => 3,
+        };
+    }
+
+    /**
      * A plain-words explanation shown next to the priority picker.
      */
     public function description(): string
