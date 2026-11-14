@@ -2,6 +2,7 @@
 
 declare(strict_types=1);
 
+use App\Http\Controllers\Admin\AssignmentController;
 use App\Http\Controllers\Admin\UserController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\Dev\UiGalleryController;
@@ -25,6 +26,9 @@ Route::middleware(['auth', 'active'])->group(function (): void {
     });
 
     Route::prefix('admin')->name('admin.')->middleware('role:admin')->group(function (): void {
+        Route::get('assignments', [AssignmentController::class, 'index'])->name('assignments.index');
+        Route::put('tickets/{ticket}/agent', [AssignmentController::class, 'assign'])->name('tickets.assign')->where('ticket', 'HD-[0-9]{4}-[0-9]{5,}');
+
         Route::resource('users', UserController::class)->except(['show', 'destroy']);
         Route::patch('users/{user}/deactivate', [UserController::class, 'deactivate'])->name('users.deactivate');
         Route::patch('users/{user}/reactivate', [UserController::class, 'reactivate'])->name('users.reactivate');

@@ -102,3 +102,55 @@
     background: $white;
     border-bottom: 1px solid $border;
 }
+
+.assign-cell {
+    min-width: 280px;
+
+    .form-select {
+        min-width: 180px;
+    }
+}
+
+.queue-tabs {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+}
+
+.queue-tab {
+    display: inline-flex;
+    gap: 0.5rem;
+    align-items: center;
+    padding: 0.375rem 0.75rem;
+    font-weight: 600;
+    color: $ink;
+    background: $white;
+    border: 1px solid $border;
+    border-radius: $radius;
+
+    &:hover {
+        color: $ink;
+        background: $surface;
+    }
+
+    &.is-active {
+        color: $primary-hover;
+        background: $primary-tint;
+        border-color: $primary;
+    }
+
+    &.is-overdue .queue-count {
+        color: $white;
+        background: $overdue;
+    }
+}
+
+.queue-count {
+    min-width: 1.5rem;
+    padding: 0 0.375rem;
+    font-size: 0.8125rem;
+    font-weight: 700;
+    text-align: center;
+    background: $surface;
+    border-radius: 10px;
+}

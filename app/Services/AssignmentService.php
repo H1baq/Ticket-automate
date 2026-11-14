@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Services;
 
+use App\Enums\TicketPriority;
 use App\Enums\TicketStatus;
 use App\Enums\UserRole;
 use App\Events\TicketAssigned;
@@ -11,6 +12,10 @@ use App\Exceptions\AssignmentNotAllowed;
 use App\Models\Ticket;
 use App\Models\TicketHistory;
 use App\Models\User;
+use App\Support\LikeSearch;
+use App\Support\QueueFilters;
+use Illuminate\Contracts\Pagination\LengthAwarePaginator;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Support\Facades\DB;
 
@@ -101,5 +106,65 @@ class AssignmentService
         }
 
         return $agent;
+    }
+
+    /**
+     * One page of the assignment queue, the tickets that need attention soonest first.
+     *
+     * Unassigned: tickets nobody has been given yet. Assigned: tickets with an agent that are not closed,
+     * which can be reassigned. Overdue: every unresolved ticket past its due time, assigned or not.
+     *
+     * @return LengthAwarePaginator<int, Ticket>
+     */
+    public function paginateQueue(QueueFilters $filters, int $perPage): LengthAwarePaginator
+    {
+        $query = Ticket::query()->with(['category', 'requester', 'agent']);
+
+        match ($filters->view) {
+            QueueFilters::ASSIGNED => $this->applyAssigned($query),
+            QueueFilters::OVERDUE => $query->overdue(),
+            default => $this->applyUnassigned($query),
+        };
+
+        if ($filters->search !== null) {
+            LikeSearch::apply($query, ['ticket_no', 'title'], $filters->search);
+        }
+        if ($filters->priority instanceof TicketPriority) {
+            $query->where('priority', $filters->priority);
+        }
+
+        return $query->orderBy('due_at')->orderBy('id')->paginate($perPage)->withQueryString();
+    }
+
+    /**
+     * How many tickets each queue view holds, for the tabs.
+     *
+     * @return array{unassigned: int, assigned: int, overdue: int}
+     */
+    public function queueCounts(): array
+    {
+        return [
+            QueueFilters::UNASSIGNED => $this->applyUnassigned(Ticket::query())->count(),
+            QueueFilters::ASSIGNED => $this->applyAssigned(Ticket::query())->count(),
+            QueueFilters::OVERDUE => Ticket::query()->overdue()->count(),
+        ];
+    }
+
+    /**
+     * @param  Builder<Ticket>  $query
+     * @return Builder<Ticket>
+     */
+    private function applyUnassigned(Builder $query): Builder
+    {
+        return $query->whereNull('agent_id')->open();
+    }
+
+    /**
+     * @param  Builder<Ticket>  $query
+     * @return Builder<Ticket>
+     */
+    private function applyAssigned(Builder $query): Builder
+    {
+        return $query->whereNotNull('agent_id')->where('status', '!=', TicketStatus::Closed->value);
     }
 }

@@ -56,6 +56,19 @@
                 <p class="text-muted mb-0">{{ $ticket->status->requesterHint($ticket->agent?->name) }}</p>
             </x-card>
 
+            @if ($agents !== null)
+                <x-card title="Assignment" class="mb-3">
+                    <p class="mb-2">
+                        @if ($ticket->agent)
+                            Assigned to <strong>{{ $ticket->agent->name }}</strong>@unless ($ticket->agent->is_active) <span class="text-overdue">(deactivated)</span>@endunless.
+                        @else
+                            Not assigned yet.
+                        @endif
+                    </p>
+                    <x-assign-form :ticket="$ticket" :agents="$agents" />
+                </x-card>
+            @endif
+
             <x-card title="Details" class="mb-3">
                 <dl class="detail-list mb-0">
                     <dt>Ticket</dt>
