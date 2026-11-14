@@ -128,6 +128,28 @@ so `composer test` runs without coverage on a Mac. Coverage is measured in
 CI, which fails the build when line coverage of `app/Services` falls below
 80%.
 
+## Accounts and signing in
+
+Open <http://localhost:8000> and sign in with the administrator you seeded
+(`SEED_ADMIN_EMAIL`). The demo data also has staff and agent accounts, for example
+`wanjiku.kamau@helpdesk.test` (staff) and `brian.otieno@helpdesk.test` (agent), all with
+the password `password`.
+
+- **Roles:** staff user, support agent and administrator. Each sees only its own menu.
+- **Lockout:** five wrong passwords in a row lock an account for 15 minutes. Every
+  failure shows the same message, "Invalid email or password.", so the form never
+  reveals which emails have accounts.
+- **Sessions:** a session ends after 30 idle minutes. There is no "remember me".
+- **Password reset:** "Forgot your password?" sends a link that works for 60 minutes and
+  once. With `MAIL_MAILER=log` the email is written to `storage/logs/laravel.log`.
+- **Self-registration:** off by default. To allow it, set `SELF_REGISTRATION_ENABLED=true`
+  in `.env`, and optionally `ALLOWED_EMAIL_DOMAINS=example.ac.ke` so only work addresses
+  can register. New accounts are always staff users.
+- **Administrators** manage accounts under **Users**: search, filter, create, edit role
+  and department, deactivate and reactivate. Accounts are never deleted. When you create
+  a user, an email with a link to choose a password is queued, so run
+  `php artisan queue:work` or no email is sent.
+
 ## Design system
 
 The interface is built from Blade components in `resources/views/components` and

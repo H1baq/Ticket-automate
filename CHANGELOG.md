@@ -45,9 +45,20 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Local-only component gallery at `/dev/ui`.
 - Branding settings `ORGANIZATION_NAME` and `ORGANIZATION_LOGO`.
 
+- Authentication with Laravel Fortify and our own views: sign-in with a 5-failure,
+  15-minute lockout, rate limits on sign-in, registration and password reset, 30-minute
+  idle sessions, password reset links that last 60 minutes, and optional
+  self-registration limited to allowed email domains.
+- `role`, `active` and `registration` middleware, and `UserPolicy`.
+- Administrator user management: search, filters, sorting, create, edit, deactivate and
+  reactivate, with a queued email that lets a new user choose a password.
+- A minimal dashboard as the landing page for every role.
+
 ### Changed
 
 - Dates are immutable application-wide.
+- The home address now leads to the dashboard, or to sign-in for visitors.
+- The sidebar shortcut legend lists only shortcuts that work for the signed-in user.
 
 - The pre-commit hook now says clearly when PHP cannot be found.
 
