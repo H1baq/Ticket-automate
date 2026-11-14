@@ -4,20 +4,32 @@ declare(strict_types=1);
 
 namespace App\Models;
 
-// use Illuminate\Contracts\Auth\MustVerifyEmail;
+use App\Enums\UserRole;
+use Carbon\CarbonImmutable;
 use Database\Factories\UserFactory;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Foundation\Auth\User as Authenticatable;
-use Illuminate\Notifications\Notifiable;
 
+/**
+ * @property int $id
+ * @property string $name
+ * @property string $email
+ * @property string $password
+ * @property UserRole $role
+ * @property string|null $department
+ * @property bool $is_active
+ * @property int $failed_logins
+ * @property CarbonImmutable|null $locked_until
+ */
 class User extends Authenticatable
 {
     /** @use HasFactory<UserFactory> */
     use HasFactory;
-    use Notifiable;
 
     /**
-     * The attributes that are mass assignable.
+     * Role, activation and lockout fields are not mass assignable on purpose:
+     * services set them explicitly so request data can never change them.
      *
      * @var list<string>
      */
@@ -25,11 +37,10 @@ class User extends Authenticatable
         'name',
         'email',
         'password',
+        'department',
     ];
 
     /**
-     * The attributes that should be hidden for serialization.
-     *
      * @var list<string>
      */
     protected $hidden = [
@@ -38,15 +49,48 @@ class User extends Authenticatable
     ];
 
     /**
-     * Get the attributes that should be cast.
-     *
      * @return array<string, string>
      */
     protected function casts(): array
     {
         return [
-            'email_verified_at' => 'datetime',
             'password' => 'hashed',
+            'role' => UserRole::class,
+            'is_active' => 'boolean',
+            'failed_logins' => 'integer',
+            'locked_until' => 'immutable_datetime',
         ];
+    }
+
+    /**
+     * @return HasMany<Ticket, $this>
+     */
+    public function requestedTickets(): HasMany
+    {
+        return $this->hasMany(Ticket::class, 'requester_id');
+    }
+
+    /**
+     * @return HasMany<Ticket, $this>
+     */
+    public function assignedTickets(): HasMany
+    {
+        return $this->hasMany(Ticket::class, 'agent_id');
+    }
+
+    /**
+     * @return HasMany<Response, $this>
+     */
+    public function responses(): HasMany
+    {
+        return $this->hasMany(Response::class);
+    }
+
+    /**
+     * @return HasMany<Notification, $this>
+     */
+    public function notifications(): HasMany
+    {
+        return $this->hasMany(Notification::class);
     }
 }
