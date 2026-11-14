@@ -7,9 +7,9 @@ namespace App\Services;
 use App\Enums\UserRole;
 use App\Events\UserCreated;
 use App\Models\User;
+use App\Support\LikeSearch;
 use App\Support\UserFilters;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
-use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\Str;
@@ -55,7 +55,7 @@ class UserService
         $query = User::query();
 
         if ($filters->search !== null && $filters->search !== '') {
-            $this->applySearch($query, $filters->search);
+            LikeSearch::apply($query, ['name', 'email'], $filters->search);
         }
         if ($filters->role instanceof UserRole) {
             $query->where('role', $filters->role);
@@ -132,19 +132,5 @@ class UserService
         $user->save();
 
         return $user;
-    }
-
-    /**
-     * @param  Builder<User>  $query
-     */
-    private function applySearch(Builder $query, string $term): void
-    {
-        // "!" is the escape character, so a typed % or _ is searched for literally instead of acting as a wildcard.
-        $like = '%'.str_replace(['!', '%', '_'], ['!!', '!%', '!_'], Str::lower($term)).'%';
-
-        $query->where(function (Builder $inner) use ($like): void {
-            $inner->whereRaw("LOWER(name) LIKE ? ESCAPE '!'", [$like])
-                ->orWhereRaw("LOWER(email) LIKE ? ESCAPE '!'", [$like]);
-        });
     }
 }

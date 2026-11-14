@@ -4,7 +4,10 @@ declare(strict_types=1);
 
 namespace App\Models;
 
+use App\Enums\UserRole;
 use Database\Factories\ResponseFactory;
+use Illuminate\Database\Eloquent\Attributes\Scope;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -39,6 +42,19 @@ class Response extends Model
         return [
             'is_internal' => 'boolean',
         ];
+    }
+
+    /**
+     * Internal notes are for the support team. Staff who reported the ticket never see them.
+     *
+     * @param  Builder<Response>  $query
+     */
+    #[Scope]
+    protected function visibleTo(Builder $query, User $viewer): void
+    {
+        if ($viewer->role === UserRole::User) {
+            $query->where('is_internal', false);
+        }
     }
 
     /**

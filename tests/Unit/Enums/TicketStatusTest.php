@@ -99,4 +99,15 @@ class TicketStatusTest extends TestCase
         $this->assertCount(count(TicketStatus::cases()), $all);
         $this->assertEqualsCanonicalizing(TicketStatus::cases(), $all);
     }
+
+    public function test_every_status_has_a_plain_sentence_for_the_requester(): void
+    {
+        foreach (TicketStatus::cases() as $status) {
+            $this->assertNotSame('', $status->requesterHint('Brian Otieno'));
+        }
+
+        $this->assertSame('Brian Otieno is working on this.', TicketStatus::InProgress->requesterHint('Brian Otieno'));
+        $this->assertSame('An agent is working on this.', TicketStatus::InProgress->requesterHint(null));
+        $this->assertSame('Waiting for an agent to be assigned.', TicketStatus::Open->requesterHint(null));
+    }
 }

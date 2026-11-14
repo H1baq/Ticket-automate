@@ -6,6 +6,7 @@ namespace App\View\Components;
 
 use App\Enums\UserRole;
 use App\Models\User;
+use App\Support\Navigation;
 use Illuminate\Contracts\View\View;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Str;
@@ -30,6 +31,7 @@ class Topbar extends Component
     public function __construct(public bool $preview = false, ?UserRole $role = null)
     {
         $user = auth()->user();
+        $effectiveRole = $user instanceof User ? $user->role : ($role ?? UserRole::User);
 
         if ($user instanceof User) {
             $this->name = $user->name;
@@ -44,7 +46,7 @@ class Topbar extends Component
         }
 
         $this->notificationsUrl = $this->urlFor('notifications.index');
-        $this->searchUrl = $this->urlFor('tickets.index');
+        $this->searchUrl = $this->urlFor(Navigation::searchRoute($effectiveRole));
         $this->logoutUrl = $this->urlFor('logout');
     }
 

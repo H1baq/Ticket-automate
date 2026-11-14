@@ -41,6 +41,15 @@ class Ticket extends Model
     use HasFactory;
 
     /**
+     * Defaults that match the database, so a new model reports them before it is reloaded.
+     *
+     * @var array<string, mixed>
+     */
+    protected $attributes = [
+        'escalation_level' => 0,
+    ];
+
+    /**
      * Only the fields a ticket is created with. Agent, escalation and
      * resolution fields are set explicitly by the services that own them.
      *
@@ -57,6 +66,14 @@ class Ticket extends Model
         'attachment_path',
         'due_at',
     ];
+
+    /**
+     * Tickets are addressed by their number (/tickets/HD-2026-00142), which people quote to the help desk.
+     */
+    public function getRouteKeyName(): string
+    {
+        return 'ticket_no';
+    }
 
     /**
      * @return array<string, string>
