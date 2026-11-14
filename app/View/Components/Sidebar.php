@@ -58,6 +58,28 @@ class Sidebar extends Component
         return $groups;
     }
 
+    /**
+     * The shortcut legend in the sidebar footer. It lists only shortcuts that do something for this user.
+     *
+     * @return list<array{keys: list<string>, label: string}>
+     */
+    public function shortcuts(): array
+    {
+        $available = collect($this->groups())->flatten(1)->pluck('shortcut')->filter();
+
+        $legend = [['keys' => ['/'], 'label' => 'Search']];
+
+        if ($available->contains('new-ticket')) {
+            $legend[] = ['keys' => ['n'], 'label' => 'New ticket'];
+        }
+
+        if ($available->contains('dashboard')) {
+            $legend[] = ['keys' => ['g', 'd'], 'label' => 'Dashboard'];
+        }
+
+        return $legend;
+    }
+
     public function organization(): string
     {
         return (string) config('hdtms.organization.name');
