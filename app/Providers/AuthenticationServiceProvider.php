@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Providers;
 
 use App\Actions\Auth\DisableRememberMe;
+use App\Actions\Auth\ResetUserPassword;
 use App\Services\LoginService;
 use Illuminate\Cache\RateLimiting\Limit;
 use Illuminate\Http\Request;
@@ -26,6 +27,9 @@ class AuthenticationServiceProvider extends ServiceProvider
     public function boot(): void
     {
         Fortify::loginView(fn () => view('auth.login'));
+        Fortify::requestPasswordResetLinkView(fn () => view('auth.forgot-password'));
+        Fortify::resetPasswordView(fn (Request $request) => view('auth.reset-password', ['request' => $request]));
+        Fortify::resetUserPasswordsUsing(ResetUserPassword::class);
 
         Fortify::authenticateUsing(
             fn (Request $request) => $this->app->make(LoginService::class)->attempt(
@@ -51,5 +55,12 @@ class AuthenticationServiceProvider extends ServiceProvider
             Limit::perMinute(10)->by(Str::lower((string) $request->input('email')).'|'.$request->ip()),
             Limit::perMinute(30)->by((string) $request->ip()),
         ]);
+
+        RateLimiter::for('password-reset', fn (Request $request): array => [
+            Limit::perMinute(5)->by((string) $request->ip()),
+            Limit::perHour(10)->by(Str::lower((string) $request->input('email')).'|'.$request->ip()),
+        ]);
+
+        RateLimiter::for('registration', fn (Request $request): Limit => Limit::perHour(10)->by((string) $request->ip()));
     }
 }
