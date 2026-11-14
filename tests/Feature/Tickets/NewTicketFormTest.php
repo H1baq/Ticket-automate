@@ -91,9 +91,21 @@ class NewTicketFormTest extends TestCase
         $this->actingAs($this->me)->get('/tickets/create')->assertSee('We aim to resolve it within 1 hour.')->assertDontSee('within 1 hours');
     }
 
-    public function test_medium_is_preselected(): void
+    public function test_no_priority_is_preselected_so_the_person_has_to_choose(): void
     {
-        $this->actingAs($this->me)->get('/tickets/create')->assertSee('value="medium"', false)->assertSeeInOrder(['value="medium"', 'checked']);
+        $html = $this->actingAs($this->me)->get('/tickets/create')->assertOk()->assertSee('value="low"', false)->assertSee('value="high"', false)->getContent();
+
+        $this->assertDoesNotMatchRegularExpression('/<input[^>]*name="priority"[^>]*\\schecked/', (string) $html);
+    }
+
+    public function test_the_priority_the_person_chose_stays_chosen_after_a_mistake(): void
+    {
+        $this->actingAs($this->me)->from('/tickets/create')->post('/tickets', ['title' => 'abc', 'priority' => 'low']);
+
+        $html = $this->actingAs($this->me)->get('/tickets/create')->getContent();
+
+        $this->assertMatchesRegularExpression('/<input[^>]*value="low"[^>]*checked/', (string) $html);
+        $this->assertDoesNotMatchRegularExpression('/<input[^>]*value="medium"[^>]*checked/', (string) $html);
     }
 
     public function test_the_page_has_no_inline_script_so_a_strict_content_security_policy_can_apply(): void
