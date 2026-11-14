@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Tests\Unit\Policies;
 
+use App\Enums\TicketStatus;
 use App\Enums\UserRole;
 use App\Models\Ticket;
 use App\Models\User;
@@ -105,6 +106,36 @@ class TicketPolicyTest extends TestCase
             $this->assertTrue($policy->viewAny($this->user(1, $role)), $role->value);
             $this->assertFalse($policy->viewAny($this->user(1, $role, false)), "{$role->value} deactivated");
         }
+    }
+
+    public function test_only_an_active_administrator_may_assign_a_ticket_that_is_not_closed(): void
+    {
+        $policy = new TicketPolicy();
+        $open = $this->ticket(1);
+        $open->status = TicketStatus::Open;
+        $resolved = $this->ticket(1, 5);
+        $resolved->status = TicketStatus::Resolved;
+        $closed = $this->ticket(1, 5);
+        $closed->status = TicketStatus::Closed;
+
+        $admin = $this->user(9, UserRole::Admin);
+        $this->assertTrue($policy->assign($admin, $open));
+        $this->assertTrue($policy->assign($admin, $resolved), 'Any status before closed may be reassigned.');
+        $this->assertFalse($policy->assign($admin, $closed));
+
+        foreach ([$this->user(1, UserRole::User), $this->user(5, UserRole::Agent), $this->user(9, UserRole::Admin, false)] as $other) {
+            $this->assertFalse($policy->assign($other, $open), $other->role->value);
+        }
+    }
+
+    public function test_only_an_active_administrator_manages_assignments(): void
+    {
+        $policy = new TicketPolicy();
+
+        $this->assertTrue($policy->manageAssignments($this->user(9, UserRole::Admin)));
+        $this->assertFalse($policy->manageAssignments($this->user(9, UserRole::Admin, false)));
+        $this->assertFalse($policy->manageAssignments($this->user(5, UserRole::Agent)));
+        $this->assertFalse($policy->manageAssignments($this->user(1, UserRole::User)));
     }
 
     public function test_tickets_are_addressed_by_their_number(): void

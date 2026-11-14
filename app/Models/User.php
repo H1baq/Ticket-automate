@@ -7,6 +7,8 @@ namespace App\Models;
 use App\Enums\UserRole;
 use Carbon\CarbonImmutable;
 use Database\Factories\UserFactory;
+use Illuminate\Database\Eloquent\Attributes\Scope;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Foundation\Auth\User as Authenticatable;
@@ -23,6 +25,7 @@ use Illuminate\Notifications\RoutesNotifications;
  * @property int $failed_logins
  * @property CarbonImmutable|null $locked_until
  * @property CarbonImmutable $created_at
+ * @property-read int|null $open_tickets_count Only present when loaded with withCount, as the agent picker does.
  */
 class User extends Authenticatable
 {
@@ -64,6 +67,17 @@ class User extends Authenticatable
             'failed_logins' => 'integer',
             'locked_until' => 'immutable_datetime',
         ];
+    }
+
+    /**
+     * Agents who can be given tickets: the role is agent and the account is not deactivated.
+     *
+     * @param  Builder<User>  $query
+     */
+    #[Scope]
+    protected function activeAgents(Builder $query): void
+    {
+        $query->where('role', UserRole::Agent)->where('is_active', true);
     }
 
     /**
