@@ -65,10 +65,23 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Agents and administrators can report problems of their own, with the same "My tickets" list and
   "New ticket" form as staff. Whoever reported a ticket never sees its internal notes, whatever their role.
 
+- Ticket assignment: an assignment queue (unassigned, assigned and overdue tickets, most urgent first)
+  with each active agent's open-ticket count in the picker, assignment and reassignment at any status
+  before closed, history rows naming both agents, and a `TicketAssigned` event.
+- SLA settings page: resolution time per priority as a whole number of hours from 1 to 720, applied to
+  tickets reported afterwards only.
+- Escalation: `tickets:escalate-overdue`, scheduled every 15 minutes without overlap, raises the level of
+  unresolved tickets past their due time, records it in the history and dispatches `TicketEscalated`.
+- Overdue counts on every dashboard, with the overdue count in red.
+
 ### Future work
 
 - Raising a ticket on behalf of another user. Every ticket is currently reported by the person who is
   signed in, and the form cannot set a different requester.
+
+### Fixed
+
+- Visually hidden labels inside wide tables no longer make a page scroll sideways on a phone.
 
 ### Changed
 

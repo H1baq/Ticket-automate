@@ -186,18 +186,6 @@ class TicketService
     }
 
     /**
-     * How many hours each priority is given, keyed by priority value, so the form can promise a time.
-     *
-     * @return array<string, int>
-     */
-    public function resolutionHoursByPriority(): array
-    {
-        return SlaPolicy::query()->get()
-            ->mapWithKeys(fn (SlaPolicy $policy): array => [$policy->priority->value => $policy->resolution_hours])
-            ->all();
-    }
-
-    /**
      * One page of a requester's own tickets, narrowed and sorted as asked. Only the requester's tickets
      * are ever queried, so no filter can reach anyone else's.
      *
@@ -251,6 +239,19 @@ class TicketService
             'overdue' => Ticket::query()->forRequester($requester)->overdue()->count(),
             'resolved' => (int) ($perStatus[TicketStatus::Resolved->value] ?? 0),
             'closed' => (int) ($perStatus[TicketStatus::Closed->value] ?? 0),
+        ];
+    }
+
+    /**
+     * How many unresolved tickets an agent has been given and how many of those are already overdue.
+     *
+     * @return array{unresolved: int, overdue: int}
+     */
+    public function assignedSummaryFor(User $agent): array
+    {
+        return [
+            'unresolved' => Ticket::query()->forAgent($agent)->open()->count(),
+            'overdue' => Ticket::query()->forAgent($agent)->overdue()->count(),
         ];
     }
 

@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Policies;
 
+use App\Enums\TicketStatus;
 use App\Enums\UserRole;
 use App\Models\Ticket;
 use App\Models\User;
@@ -21,6 +22,22 @@ class TicketPolicy
     public function viewAny(User $user): bool
     {
         return $user->is_active;
+    }
+
+    /**
+     * The assignment queue and the SLA-aware work lists of administrators.
+     */
+    public function manageAssignments(User $user): bool
+    {
+        return $user->is_active && $user->role === UserRole::Admin;
+    }
+
+    /**
+     * Only an administrator assigns tickets, and a closed ticket is final.
+     */
+    public function assign(User $user, Ticket $ticket): bool
+    {
+        return $this->manageAssignments($user) && $ticket->status !== TicketStatus::Closed;
     }
 
     /**

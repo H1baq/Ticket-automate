@@ -58,6 +58,23 @@ return [
 
     /*
     |--------------------------------------------------------------------------
+    | Escalation
+    |--------------------------------------------------------------------------
+    |
+    | A ticket that is unresolved past its due time is escalated again every
+    | interval until it is resolved. The level cannot pass 255, which is the
+    | most the database column can hold.
+    |
+    */
+
+    'escalation' => [
+        'interval_minutes' => 15,
+        'max_level' => 255,
+        'batch_size' => (int) env('ESCALATION_BATCH_SIZE', 500),
+    ],
+
+    /*
+    |--------------------------------------------------------------------------
     | Branding
     |--------------------------------------------------------------------------
     |

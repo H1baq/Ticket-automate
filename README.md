@@ -163,6 +163,25 @@ A ticket may have one attachment: a JPG, PNG or PDF of up to 5 MB. Attachments a
 privately and can only be downloaded by the person who reported the ticket, the agent it is
 assigned to, and administrators. Only the numbers matter in the address: `/tickets/HD-2026-00142`.
 
+## Assignment, SLA and escalation
+
+Administrators work from the sidebar:
+
+- **Assignment queue** lists unassigned tickets, the most urgent (earliest due time) first, with
+  each active agent's open-ticket count beside the picker. The **Assigned** tab lets you move a
+  ticket to another agent at any status before closed, and **Overdue** lists every unresolved
+  ticket past its due time. The first assignment moves a ticket from open to assigned.
+- **SLA settings** sets the resolution time of each priority, a whole number of hours from 1 to 720. A new time applies only to tickets reported after you save; tickets already reported keep
+  the due time they were given.
+- **Escalation:** every 15 minutes a ticket that is unresolved past its due time goes up one
+  level, and the history records it as made by the system. Administrators are always the ones to
+  be told, and the assigned agent too from level 2. A ticket keeps going up one level every
+  15 minutes until it is resolved, up to level 255. Overdue tickets carry a red "Overdue" label
+  on every list and dashboard.
+
+A ticket cannot be assigned to the person who reported it, to a deactivated agent, or once it is
+closed.
+
 ## Design system
 
 The interface is built from Blade components in `resources/views/components` and
@@ -178,13 +197,19 @@ To rebrand the product, set `ORGANIZATION_NAME` and `ORGANIZATION_LOGO` in `.env
 
 ## Scheduler and queue
 
-Notifications and emails are queued, and escalation and auto-close run on the
-scheduler. Both need to be running for the full workflow:
+Notifications and emails are queued, and escalation (and later auto-close) run on the
+scheduler. Both need to be running for the full workflow. Without the scheduler no ticket
+is ever escalated:
 
 ```bash
-php artisan queue:work       # processes queued notifications and emails
-php artisan schedule:work    # runs scheduled tasks every minute (local use)
+php artisan queue:work               # processes queued notifications and emails
+php artisan schedule:work            # runs scheduled tasks every minute (local use)
+php artisan tickets:escalate-overdue # escalate overdue tickets now, by hand
 ```
+
+`tickets:escalate-overdue` is scheduled every 15 minutes and never overlaps with itself, so
+running it by hand while the scheduler is on is safe: a ticket is never escalated twice within
+15 minutes.
 
 In production, use Supervisor for `queue:work` and a cron entry
 `* * * * * php /path/to/artisan schedule:run` for the scheduler. The
