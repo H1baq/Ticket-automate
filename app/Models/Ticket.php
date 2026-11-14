@@ -68,6 +68,14 @@ class Ticket extends Model
     ];
 
     /**
+     * Tickets are addressed by their number (/tickets/HD-2026-00142), which people quote to the help desk.
+     */
+    public function getRouteKeyName(): string
+    {
+        return 'ticket_no';
+    }
+
+    /**
      * @return array<string, string>
      */
     protected function casts(): array
