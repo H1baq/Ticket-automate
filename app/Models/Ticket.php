@@ -7,6 +7,7 @@ namespace App\Models;
 use App\Enums\TicketPriority;
 use App\Enums\TicketStatus;
 use Carbon\CarbonImmutable;
+use Carbon\CarbonInterface;
 use Database\Factories\TicketFactory;
 use Illuminate\Database\Eloquent\Attributes\Scope;
 use Illuminate\Database\Eloquent\Builder;
@@ -160,6 +161,23 @@ class Ticket extends Model
     {
         $query->whereIn('status', self::values(TicketStatus::unresolved()))
             ->where('due_at', '<', now());
+    }
+
+    /**
+     * Tickets that are due to be escalated now: unresolved, past their due time, not already escalated
+     * within the last $intervalMinutes, and not yet at the highest level.
+     *
+     * @param  Builder<Ticket>  $query
+     */
+    #[Scope]
+    protected function escalatable(Builder $query, CarbonInterface $now, int $intervalMinutes, int $maxLevel): void
+    {
+        $query->whereIn('status', self::values(TicketStatus::unresolved()))
+            ->where('due_at', '<', $now)
+            ->where('escalation_level', '<', $maxLevel)
+            ->where(function (Builder $inner) use ($now, $intervalMinutes): void {
+                $inner->whereNull('escalated_at')->orWhere('escalated_at', '<=', $now->subMinutes($intervalMinutes));
+            });
     }
 
     /**
